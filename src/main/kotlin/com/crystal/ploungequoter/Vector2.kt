@@ -2,6 +2,10 @@ package com.crystal.ploungequoter
 
 class Vector2 {
     
+    companion object Statics {
+        val ZERO: Vector2 = Vector2()
+    }
+        
     var x: Double
     var y: Double
 
@@ -12,15 +16,20 @@ class Vector2 {
         y = setY
     }
 
-    fun plus(other: Vector2): Vector2 {
+    operator fun plus(other: Vector2): Vector2 {
         return Vector2(x + other.x, y + other.y)
     }
 
-    fun minus(other: Vector2): Vector2 {
+    operator fun minus(other: Vector2): Vector2 {
         return Vector2(x - other.x, y - other.y)
     }
     
-    fun scale(other: Float): Vector2 {
+    operator fun times(other: Float): Vector2 {
         return Vector2(x*other, y*other)
     }
+
+}
+
+operator fun Float.times(other: Vector2): Vector2 {
+    return other * this
 }

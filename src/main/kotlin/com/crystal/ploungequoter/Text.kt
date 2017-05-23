@@ -2,22 +2,20 @@ package com.crystal.ploungequoter
 
 import java.io.*
 import java.awt.Graphics
-import com.crystal.ploungequoter.Vector2
+import com.crystal.ploungequoter.*
 
-class Text {
-    
-    var relPosition: Vector2
+class Text : RenderObject {
     var content: String?
     var fontName: String?
 
     constructor(fontName: String) {
-        this.relPosition = Vector2()
+        this.absPosition = Vector2()
         this.content = null
         this.fontName = fontName
     }
     
     constructor(fontName: String, content: String) {
-        this.relPosition = Vector2()
+        this.absPosition = Vector2()
         this.content = content
         this.fontName = fontName
     }
@@ -28,11 +26,7 @@ class Text {
      * @param text Text to put on the image
      *
      */
-    fun render() {
+    override fun render(): Unit {
         return
-    }
-
-    fun getAbsPosition() {
-        return 
     }
 }
