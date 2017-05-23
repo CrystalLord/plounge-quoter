@@ -1,0 +1,12 @@
+
+# Temporary Files
+*.swp
+*.swo
+*~
+*.delete
+
+
+# Build files
+target/
+*.jar
+*.class
