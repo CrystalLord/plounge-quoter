@@ -1,21 +1,21 @@
 package com.crystal.ploungequoter
 
 import java.io.*
-import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Image
 import com.crystal.ploungequoter.*
 
 class Text : RenderObject {
-    var content: String?
+    var content: String = ""
     var fontName: String?
 
     constructor(fontName: String) {
-        this.absPosition = Vector2()
-        this.content = null
+        this.globalPosition = Vector2.ZERO
         this.fontName = fontName
     }
     
     constructor(fontName: String, content: String) {
-        this.absPosition = Vector2()
+        this.globalPosition = Vector2.ZERO
         this.content = content
         this.fontName = fontName
     }
@@ -26,7 +26,8 @@ class Text : RenderObject {
      * @param text Text to put on the image
      *
      */
-    override fun render(): Unit {
+    override fun render(img: Image): Unit {
+        println("RENDERING")
         return
     }
 }

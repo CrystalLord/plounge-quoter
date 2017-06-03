@@ -23,7 +23,7 @@ class Vector2 {
     operator fun minus(other: Vector2): Vector2 {
         return Vector2(x - other.x, y - other.y)
     }
-    
+
     operator fun times(other: Float): Vector2 {
         return Vector2(x*other, y*other)
     }
