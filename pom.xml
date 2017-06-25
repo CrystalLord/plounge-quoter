@@ -91,7 +91,6 @@
             </goals>
           </execution>
         </executions>
-
       </plugin>
     </plugins>
   </build>

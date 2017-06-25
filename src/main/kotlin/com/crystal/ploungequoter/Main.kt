@@ -8,10 +8,15 @@ fun main(args: Array<String>) {
     generatePloungeQuote()
 }
 
+/**
+ * Run the full Plounge Quote generation. 
+ *
+ * Add all the generation objects, then run the renderer.
+ */
 fun generatePloungeQuote() {
     var backgroundImagePath: Path =
-        Paths.get("~/.gitconfig")
+        Paths.get("/home/crystal/.gitconfig")
     var renderer: Renderer = Renderer(backgroundImagePath)
-    renderer.renderObjs.add(Text("Hello World"))
+    renderer.addRenderObj(Text("Hello World"))
     renderer.render()
 }
