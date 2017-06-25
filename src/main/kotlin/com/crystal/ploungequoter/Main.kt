@@ -1,8 +1,9 @@
 package com.crystal.ploungequoter
 
 import com.crystal.ploungequoter.*
-import java.io.*
-import java.nio.file.*
+import java.io.File
+import java.nio.file.Paths
+import java.nio.file.Path
 
 fun main(args: Array<String>) {
     generatePloungeQuote()
@@ -14,9 +15,12 @@ fun main(args: Array<String>) {
  * Add all the generation objects, then run the renderer.
  */
 fun generatePloungeQuote() {
+    val PNGTYPE: String = "png"
+    val JPGTYPE: String = "jpg"
+    
     var backgroundImagePath: Path =
-        Paths.get("/home/crystal/.gitconfig")
+        Paths.get("/home/crystal/image.png")
     var renderer: Renderer = Renderer(backgroundImagePath)
     renderer.addRenderObj(Text("Hello World"))
-    renderer.render()
+    renderer.render(PNGTYPE,File("output.png"))
 }
