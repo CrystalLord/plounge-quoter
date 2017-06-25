@@ -41,6 +41,7 @@ class Renderer(val backgroundPath: Path?) {
                 // Pass the image to each of the render objects in the stack
                 rObj.render(img)
             }
+
             ImageIO.write(img,outputType,outputFile)
         }
         catch (e: IllegalStateException) {

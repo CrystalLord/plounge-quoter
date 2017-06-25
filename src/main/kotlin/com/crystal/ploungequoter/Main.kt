@@ -6,7 +6,7 @@ import java.nio.file.Paths
 import java.nio.file.Path
 
 fun main(args: Array<String>) {
-    generatePloungeQuote()
+    generatePloungeQuote(args[0])
 }
 
 /**
@@ -14,12 +14,12 @@ fun main(args: Array<String>) {
  *
  * Add all the generation objects, then run the renderer.
  */
-fun generatePloungeQuote() {
+fun generatePloungeQuote(background_path: String) {
     val PNGTYPE: String = "png"
     val JPGTYPE: String = "jpg"
     
     var backgroundImagePath: Path =
-        Paths.get("/home/crystal/image.png")
+        Paths.get(background_path)
     var renderer: Renderer = Renderer(backgroundImagePath)
     renderer.addRenderObj(Text("Hello World"))
     renderer.render(PNGTYPE,File("output.png"))

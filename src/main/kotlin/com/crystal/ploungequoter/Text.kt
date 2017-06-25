@@ -27,7 +27,7 @@ class Text : RenderObject {
      *
      */
     override fun render(img: Image): Unit {
-        println("RENDERING")
-        return
+        var graphics = img.getGraphics()
+        graphics.drawString("HELLO WORLD", 100, 100)
     }
 }
