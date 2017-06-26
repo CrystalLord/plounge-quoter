@@ -2,6 +2,7 @@ package com.crystal.ploungequoter
 
 import com.crystal.ploungequoter.Vector2
 import java.awt.Image
+import java.awt.Graphics2D
 
 /**
  * An abstract rendering object
@@ -36,6 +37,10 @@ abstract class RenderObject {
         globalPosition = (relPos
          + (parentObj?.globalPosition ?: Vector2.ZERO))
     }
-
-    abstract fun render(img: Image): Unit
+    
+    /**
+     * Render the object onto some graphics object.
+     * @param g The graphics object to render on to.
+     */
+    abstract fun render(g: Graphics2D): Unit
 }

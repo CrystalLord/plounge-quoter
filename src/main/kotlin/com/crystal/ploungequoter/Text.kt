@@ -1,33 +1,35 @@
 package com.crystal.ploungequoter
 
-import java.io.*
+import java.awt.Graphics
 import java.awt.Graphics2D
+import java.awt.Color
 import java.awt.Image
-import com.crystal.ploungequoter.*
 
 class Text : RenderObject {
-    var content: String = ""
+    var content: String
     var fontName: String?
-
-    constructor(fontName: String) {
-        this.globalPosition = Vector2.ZERO
-        this.fontName = fontName
-    }
     
-    constructor(fontName: String, content: String) {
-        this.globalPosition = Vector2.ZERO
+    constructor() : this(Vector2.ZERO, "", "")
+    
+    constructor(position: Vector2) : this(position, "", "")
+    
+    constructor(position: Vector2, content: String, fontName: String) {
+        this.globalPosition = position
         this.content = content
         this.fontName = fontName
     }
-    
+
     /**
      * render()
-     *
-     * @param text Text to put on the image
-     *
+     * @param img Image object to use when 
      */
-    override fun render(img: Image): Unit {
-        var graphics = img.getGraphics()
-        graphics.drawString("HELLO WORLD", 100, 100)
+    override fun render(g: Graphics2D): Unit {
+        var color: Color = Color(0,0,0)
+        g.setPaint(color)
+        g.drawString(
+            this.content,
+            Math.round(this.globalPosition.x),
+            Math.round(this.globalPosition.y)
+        )
     }
 }

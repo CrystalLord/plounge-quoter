@@ -6,12 +6,12 @@ class Vector2 {
         val ZERO: Vector2 = Vector2()
     }
         
-    var x: Double
-    var y: Double
+    var x: Float
+    var y: Float
 
-    constructor() : this(0.0,0.0) {}
+    constructor() : this(0.0f,0.0f) {}
 
-    constructor(setX: Double, setY: Double) {
+    constructor(setX: Float, setY: Float) {
         x = setX
         y = setY
     }
