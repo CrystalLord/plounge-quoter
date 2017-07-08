@@ -1,4 +1,4 @@
-package com.crystal.ploungequoter
+package ploungequoter
 
 import java.io.File
 import java.nio.file.Paths

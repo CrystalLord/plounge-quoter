@@ -1,4 +1,4 @@
-package com.crystal.ploungequoter
+package ploungequoter
 
 import java.io.File
 import javax.imageio.ImageIO
@@ -10,14 +10,14 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
- * 
+ *
  */
 class Renderer(val backgroundPath: Path?) {
     /**
      * List of render objects.
      */
     private var renderObjs: MutableList<RenderObject>
-    
+
     init {
         // Assign the render object list to an empty list.
         this.renderObjs = mutableListOf<RenderObject>()
@@ -34,32 +34,32 @@ class Renderer(val backgroundPath: Path?) {
         } else if (!Files.exists(backgroundPath)) {
             throw IllegalStateException("Background file not found.")
         }
-        
+
         try {
             // Read the background image file in.
             var img: BufferedImage = ImageIO.read(this.backgroundPath.toFile())
             // Retrieve the graphics object generated from the background image.
             var g: Graphics2D = img.getGraphics() as Graphics2D
-            
+
             // Turn on antialising for the text.
             var hints: RenderingHints = RenderingHints(
                     RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
             g.setRenderingHints(hints)
-            
+
             // Render all the objects in the queue.
             for (rObj in this.renderObjs) {
                 // Pass the image to each of the render objects in the stack
                 rObj.render(g)
             }
-            
+
             // Actually write the file
             ImageIO.write(img,outputType,outputFile)
         } catch (e: IllegalStateException) {
             throw IllegalStateException("Background file could not be read.")
         }
     }
-    
+
     /**
      * @param obj Object to add to the render objects
      */
