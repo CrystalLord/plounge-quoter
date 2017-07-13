@@ -1,10 +1,10 @@
-package ploungequoter
+package org.crystal.ploungequoter
 
 /**
  * Library class to help represent arbitrary Matrices.
  */
 open class Matrix<T> {
-    private var internalList: ArrayList<T>
+    private var internalList: ArrayList<T?>
     val width: Int
     val height: Int
     private val defaultVal: T?
@@ -16,10 +16,10 @@ open class Matrix<T> {
         this.height = height
         this.defaultVal = defaultVal
         val size: Int = this.width * this.height
-        this.internalList = ArrayList<T>(size)
+        this.internalList = ArrayList<T?>(size)
         if (this.defaultVal != null) {
             for (i: Int in 0..size) {
-                this.internalList[i] == defaultVal
+                this.internalList[i] = defaultVal
             }
         }
 
@@ -28,7 +28,7 @@ open class Matrix<T> {
     /**
      * Get the element at a specified row/column.
      */
-    fun getRC(row: Int, col: Int): T {
+    fun getRC(row: Int, col: Int): T? {
         if (row < 0 || col < 0 || row >= this.height || col >= this.width) {
             throw IllegalArgumentException("Out of index for Matrix")
         }
@@ -54,7 +54,7 @@ open class Matrix<T> {
         var newMatrix: Matrix<T> = Matrix<T>(this.width, this.height,
             this.defaultVal)
         var i: Int = 0
-        var newList: ArrayList<T> = ArrayList<T>(this.internalList)
+        var newList: ArrayList<T?> = ArrayList<T?>(this.internalList)
         newMatrix.internalList = newList
         return newMatrix
     }

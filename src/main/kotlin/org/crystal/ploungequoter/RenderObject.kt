@@ -1,14 +1,7 @@
-package ploungequoter
+package org.crystal.ploungequoter
 
 import java.awt.Image
 import java.awt.Graphics2D
-
-/**
- * Anchor class for easy positioning.
- */
-enum class AnchorPos {
-    TOPLEFT, BOTLEFT, TOPRIGHT, BOTRIGHT
-}
 
 /**
  * An abstract rendering object
@@ -23,7 +16,7 @@ abstract class RenderObject {
     // Render objects allow parent
     var parentObj: RenderObject? = null
     // Anchor for the rendering
-    var anchor: AnchorPos = AnchorPos.TOPLEFT
+    var anchor: Anchor = Anchor.TOP_LEFT
 
     /**
      * Get relative position compared to parent.
@@ -55,11 +48,11 @@ abstract class RenderObject {
      * @return Returns the width of the render object as an integer,
      * in pixels.
      */
-    abstract fun getWidth(): Int
+    abstract fun getWidth(g: Graphics2D): Int
 
     /**
      * @return Returns the height of the render object as an integer,
      * in pixels.
      */
-    abstract fun getHeight(): Int
+    abstract fun getHeight(g: Graphics2D): Int
 }

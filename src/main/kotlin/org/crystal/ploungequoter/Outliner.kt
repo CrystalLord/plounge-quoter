@@ -1,4 +1,4 @@
-package ploungequoter
+package org.crystal.ploungequoter
 
 import java.awt.image.BufferedImage
 
