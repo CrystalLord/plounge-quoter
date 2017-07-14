@@ -52,12 +52,12 @@ class PQParser {
 
 
         fun getBackground(): String? {
-            return this.cmd?.getOptionValue("background") ?: null
+            return this.cmd?.getOptionValue("background")
         }
 
 
         fun getConfigFile(): String? {
-            return this.cmd?.getOptionValue("configFile") ?: null
+            return this.cmd?.getOptionValue("configFile")
         }
 
         /**

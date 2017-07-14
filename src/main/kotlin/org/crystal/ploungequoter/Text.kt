@@ -6,31 +6,54 @@ import java.awt.Image
 import java.awt.Font
 import java.awt.FontMetrics
 
+/**
+ * Enum for text align
+ */
+enum class Alignment {
+    LEFT,
+    RIGHT,
+    CENTRE
+}
+
 class Text : RenderObject {
+
+
     companion object {
-        private val DEFAULT_TYPEFACE = "SansSerif"
-        private val DEFAULT_FONT_SIZE = 12
+        /** The default Settings */
+        val DEFAULT_FONT = Font("SansSerif", Font.PLAIN, 12)
+        val DEFAULT_ANCHOR = Anchor.TOP_LEFT
+        val DEFAULT_LINE_SPACE = 1
     }
 
-    /** The content in this text object to render. */
+    /**
+     * The content in this text object to render.
+     * Each line of the content is stored as an element in this list.
+     */
     var contentList: List<String>
-    /** The foreground colour of the text */
+    /** The foreground colour of the text. Default is black. */
     var color: Color
-    /** The font used to render the text. */
+    /** The font used to render the text. Default is Plain SansSerif, 12pt. */
     var font: Font?
+    /** The amount of vertical spacing between lines, in points */
+    var lineSpacing: Int
+    /** Alignment for the text, i.e. the justification. */
+    var alignment: Alignment
 
     /** The default constructor */
-    constructor() : this(Vector2.ZERO, "", null)
+    constructor() : this(Vector2.ZERO, "", Text.DEFAULT_FONT)
 
-    constructor(position: Vector2) : this(position, "", null)
+    constructor(position: Vector2) : this(position, "", Text.DEFAULT_FONT)
 
     constructor(position: Vector2, content: String, font: Font?) {
         this.globalPosition = position
         this.contentList = content.split("\n")
         this.color = Color(0,0,0)
         this.font = font
-        this.anchor = Anchor.TOP_LEFT
+        this.anchor = Text.DEFAULT_ANCHOR
+        this.lineSpacing = Text.DEFAULT_LINE_SPACE
+        this.alignment = Alignment.LEFT
     }
+
 
     /**
      * Set the content of this text object.
@@ -73,47 +96,43 @@ class Text : RenderObject {
 
 
     /**
-     * Retrieve the true position to render at, instead of the skewed anchored
-     * position.
-     *
-     * @param g Graphics object to evaluate the size of this Text.
+     * Render the text object.
+     * @param g Graphics2D object to pass in to render on.
      */
-    private fun getAnchoredPosition(g: Graphics2D): Vector2 {
-        var shift: Vector2 = Vector2.ZERO
+    override fun render(g: Graphics2D) {
+        // Store the graphics properties
+        val stoColor: Color = g.getColor()
+        val stoFont: Font = g.getFont()
 
-        when (this.anchor) {
-            Anchor.TOP_LEFT -> shift = Vector2.ZERO
-            Anchor.TOP_RIGHT -> {
-                shift = Vector2(-this.getWidth(g) as Float, 0f)
-            }
-            Anchor.BOT_LEFT -> {
-                shift = Vector2(0f, -this.getHeight(g) as Float)
-            }
-            Anchor.BOT_RIGHT -> {
-                shift = Vector2(
-                        -this.getWidth(g) as Float,
-                        -this.getHeight(g) as Float
-                )
-            }
-            Anchor.TOP_CENTRE -> {
-                shift = Vector2(-this.getWidth(g)/2f, 0f)
-            }
-            Anchor.BOT_CENTRE -> {
-                shift = Vector2(
-                        -this.getWidth(g)/2f,
-                        -this.getHeight(g) as Float
-                )
-            }
-            Anchor.CENTRE_CENTRE -> {
-                shift = Vector2(
-                        -this.getWidth(g)/2f,
-                        -this.getHeight(g)/2f
-                )
-            }
-            else -> shift = Vector2.ZERO
+        // Set graphics properties
+        g.setColor(this.color)
+        // Retrieve the font we want to use
+        // If the font doesn't exist, use the default.
+        g.setFont(this.font ?: Text.DEFAULT_FONT)
+
+        // Retrieve the position we want for this object.
+        val anchorPos: Vector2 = this.getAnchoredPosition(g)
+        val metrics: FontMetrics = g.getFontMetrics(this.font)
+
+        for (i: Int in this.contentList.indices) {
+            // Retrieve the line position using alignments.
+            // Convert pts to pixels
+            val pixelSpacing: Int = Utils.ptsToPixels(this.lineSpacing)
+            // Create shifts for the text
+            val vertShift: Int = i * (metrics.getHeight() + pixelSpacing)
+            val horzShift: Int = getAlignmentShift(g, this.contentList[i])
+
+            // Actually draw the string
+            g.drawString(
+                this.contentList[i],
+                Math.round(anchorPos.x)+horzShift,
+                Math.round(anchorPos.y)+vertShift
+            )
         }
 
-        return this.globalPosition + shift
+        // Reset the graphics properties
+        g.setColor(stoColor)
+        g.setFont(stoFont)
     }
 
 
@@ -127,38 +146,65 @@ class Text : RenderObject {
 
 
     /**
-     * Render the text object.
-     *
-     * @param g Graphics2D object to pass in to render on.
+     * Retrieve the number of pixels that must be
+     * @param g Graphics2D object to get the font Metrics for.
+     * @param line Line of text represents one, unbroken (with carriage returns)
+     * line of text.
+     * @return Returns the number of pixels this line of text should be shifted
+     * such that the line is aligned correctly.
      */
-    override fun render(g: Graphics2D) {
-        // Store the graphics properties
-        val stoColor: Color = g.getColor()
-        val stoFont: Font = g.getFont()
+    private fun getAlignmentShift(g: Graphics2D, line: String): Int {
+        val lineWidth: Int = this.getLineWidth(g, line)
+        var shift: Int = 0
+        when (this.alignment) {
+            Alignment.RIGHT -> shift = -lineWidth + this.getWidth(g)
+            Alignment.CENTRE -> shift = -lineWidth/2 + this.getWidth(g)
+            else -> shift = 0
+        }
+        return shift
+    }
 
-        // Set graphics properties
-        g.setColor(this.color)
-        // Retrieve the font we want to use
-        // If the font doesn't exist, use the default.
-        g.setFont(this.font
-                ?: Font(
-                        Text.DEFAULT_TYPEFACE,
-                        Font.PLAIN,
-                        Text.DEFAULT_FONT_SIZE
+
+    /**
+     * Retrieve the true position to render at, instead of the skewed anchored
+     * position.
+     *
+     * @param g Graphics object to evaluate the size of this Text.
+     */
+    private fun getAnchoredPosition(g: Graphics2D): Vector2 {
+        var shift: Vector2 = Vector2.ZERO
+
+        when (this.anchor) {
+            Anchor.TOP_LEFT -> shift = Vector2.ZERO
+            Anchor.TOP_RIGHT -> {
+                shift = Vector2(-this.getWidth(g).toFloat(), 0f)
+            }
+            Anchor.BOT_LEFT -> {
+                shift = Vector2(0f, -this.getHeight(g).toFloat())
+            }
+            Anchor.BOT_RIGHT -> {
+                shift = Vector2(
+                        -this.getWidth(g).toFloat(),
+                        -this.getHeight(g).toFloat()
                 )
-        )
-
-        // Actually draw the goddamn text.
-        val printPos: Vector2 = this.getAnchoredPosition(g)
-        // TODO Must fix
-        g.drawString(
-            this.contentList[0],
-            Math.round(printPos.x),
-            Math.round(printPos.y)
-        )
-
-        // Reset the graphics properties
-        g.setColor(stoColor)
-        g.setFont(stoFont)
+            }
+            Anchor.TOP_CENTRE -> {
+                shift = Vector2(-this.getWidth(g).toFloat()/2f, 0f)
+            }
+            Anchor.BOT_CENTRE -> {
+                shift = Vector2(
+                        -this.getWidth(g).toFloat()/2f,
+                        -this.getHeight(g).toFloat()
+                )
+            }
+            Anchor.CENTRE_CENTRE -> {
+                shift = Vector2(
+                        -this.getWidth(g).toFloat()/2f,
+                        -this.getHeight(g).toFloat()/2f
+                )
+            }
+            else -> shift = Vector2.ZERO
+        }
+        return this.globalPosition + shift
     }
 }

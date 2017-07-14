@@ -18,7 +18,7 @@ open class Matrix<T> {
         val size: Int = this.width * this.height
         this.internalList = ArrayList<T?>(size)
         if (this.defaultVal != null) {
-            for (i: Int in 0..size) {
+            for (i: Int in 0 until size) {
                 this.internalList[i] = defaultVal
             }
         }
@@ -53,7 +53,6 @@ open class Matrix<T> {
     fun clone(): Matrix<T> {
         var newMatrix: Matrix<T> = Matrix<T>(this.width, this.height,
             this.defaultVal)
-        var i: Int = 0
         var newList: ArrayList<T?> = ArrayList<T?>(this.internalList)
         newMatrix.internalList = newList
         return newMatrix

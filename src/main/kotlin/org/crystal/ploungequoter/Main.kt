@@ -25,6 +25,8 @@ fun main(args: Array<String>) {
 fun generatePloungeQuote(background_path: String?) {
     val PNGTYPE: String = "png"
     val JPGTYPE: String = "jpg"
+    val OUTPUT_PATH: String = "output_new.png"
+
 
     // Load all the system fonts for any text generation.
     //FontMap.loadFonts()
@@ -38,10 +40,13 @@ fun generatePloungeQuote(background_path: String?) {
     var renderer: Renderer = Renderer(backgroundImagePath)
 
     var quote: Text = Text(Vector2(100.0f,100.0f))
-    quote.setContent("HELLO WORLD!")
-    quote.font = Font("DejaVu Serif", Font.PLAIN, 40)
-    quote.color = Color(0,255,255)
+    quote.setContent("HELLO\nWORLD!")
+    quote.font = Font("Inconsolata", Font.PLAIN, 10)
+    quote.color = Color(0,0,255)
+    quote.anchor = Anchor.BOT_LEFT
 
     renderer.addRenderObj(quote)
-    renderer.render(PNGTYPE,File("output.png"))
+    println("Rendering...")
+    renderer.render(PNGTYPE,File(OUTPUT_PATH))
+    print("Output at: "); println(OUTPUT_PATH)
 }
