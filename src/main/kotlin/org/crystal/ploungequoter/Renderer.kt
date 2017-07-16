@@ -3,6 +3,8 @@ package org.crystal.ploungequoter
 import java.io.File
 import javax.imageio.ImageIO
 import java.awt.Graphics2D
+import java.awt.geom.AffineTransform
+import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.awt.RenderingHints
 import java.nio.file.Files
@@ -13,14 +15,15 @@ import java.nio.file.Paths
  *
  */
 class Renderer(val backgroundPath: Path?) {
+
     /**
-     * List of render objects.
+     * List of layers in the program.
      */
-    private var renderObjs: MutableList<RenderObject>
+    private var layers: MutableList<RenderLayer>
 
     init {
         // Assign the render object list to an empty list.
-        this.renderObjs = mutableListOf<RenderObject>()
+        this.layers = mutableListOf<RenderLayer>()
     }
 
     /**
@@ -37,33 +40,51 @@ class Renderer(val backgroundPath: Path?) {
 
         try {
             // Read the background image file in.
+            // Note, the background is the base layer for the rendering system.
+            // Sensibly, this would be changed for a more general
+            // implementation.
             var img: BufferedImage = ImageIO.read(this.backgroundPath.toFile())
-            // Retrieve the graphics object generated from the background image.
-            var g: Graphics2D = img.getGraphics() as Graphics2D
-
-            // Turn on antialising for the text.
-            var hints: RenderingHints = RenderingHints(
-                    RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-            g.setRenderingHints(hints)
+            var overarchingGraphics: Graphics2D = img.createGraphics()
 
             // Render all the objects in the queue.
-            for (rObj in this.renderObjs) {
-                // Pass the image to each of the render objects in the stack
-                rObj.render(g)
+            for (layer in this.layers) {
+                // Pass each of the layers into the overarching graphics.
+
+                overarchingGraphics.drawImage(
+                        layer.getImage(), // The image to draw
+                        AffineTransformOp(
+                                AffineTransform(),
+                                AffineTransformOp.TYPE_BICUBIC
+                        ), // Identity transformation
+                        0, // x pos
+                        0 // y pos
+                )
             }
+
+            // TODO:
+            // Consider closing the graphics object here?
 
             // Actually write the file
             ImageIO.write(img,outputType,outputFile)
+            //ImageIO.write(textLayer,outputType,File("/home/crystal/test.png"))
+
         } catch (e: IllegalStateException) {
             throw IllegalStateException("Background file could not be read.")
         }
     }
 
     /**
-     * @param obj Object to add to the render objects
+     * Retrieve a layer from the renderer.
+     * @param index Index of the layer to retrieve.
      */
-    fun addRenderObj(obj: RenderObject): Unit {
-        this.renderObjs.add(obj)
+    fun getLayer(index: Int): RenderLayer = this.layers[index]
+
+    /**
+     * Place a layer to the back of the queue.
+     * @param layer Layer to stick ontop of the Renderer.
+     */
+    fun addLayer(layer: RenderLayer) {
+        this.layers.add(layer)
     }
+
 }

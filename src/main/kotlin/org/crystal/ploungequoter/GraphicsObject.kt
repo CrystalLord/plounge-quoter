@@ -4,12 +4,12 @@ import java.awt.Image
 import java.awt.Graphics2D
 
 /**
- * An abstract rendering object
+ * An abstract graphics object
  *
- * An abstract class from which all objects that are rendered in an image are
- * derived from.
+ * An abstract class from which all vector objects that are rendered in an image
+ * are derived from.
  */
-abstract class RenderObject {
+abstract class GraphicsObject {
 
     // Absolute position
     var globalPosition: Vector2 = Vector2.ZERO
@@ -42,7 +42,7 @@ abstract class RenderObject {
      * Render the object onto some graphics object.
      * @param g The graphics object to render on to.
      */
-    abstract fun render(g: Graphics2D): Unit
+    abstract fun render(g: Graphics2D)
 
     /**
      * @return Returns the width of the render object as an integer,

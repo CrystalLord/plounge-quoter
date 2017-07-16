@@ -45,7 +45,9 @@ fun generatePloungeQuote(background_path: String?) {
     quote.color = Color(0,0,255)
     quote.anchor = Anchor.BOT_LEFT
 
-    renderer.addRenderObj(quote)
+    // Need to make a layer here.
+
+    //renderer.addRenderObj(quote)
     println("Rendering...")
     renderer.render(PNGTYPE,File(OUTPUT_PATH))
     print("Output at: "); println(OUTPUT_PATH)
