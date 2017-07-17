@@ -7,26 +7,41 @@ import java.awt.image.WritableRaster
 
 /**
  * Layer which uses the underlying Java AWT Graphics object to render itself.
- *
- * @param width Width of the layer, in pixels.
- * @param height Height of the
  */
-class GraphicsLayer(
-        width: Int,
-        height: Int
-) : RenderLayer(width, height) {
+class GraphicsLayer : RenderLayer {
 
-    /** The objects that are placed on this layer to be rendered */
-    lateinit private var graphicsObjs: MutableList<GraphicsObject>
+    // ------------------------------------------------------------------------
+    // Properties
+    // ------------------------------------------------------------------------
+
+    // Width of the layer in pixels.
+    private var width: Int
+    // Height of the layer in pixels.
+    private var height: Int
+
+    // The objects that are placed on this layer to be rendered
+    private var graphicsObjs: MutableList<GraphicsObject> = (
+            mutableListOf<GraphicsObject>()
+    )
+
+    // ------------------------------------------------------------------------
+    // Methods
+    // ------------------------------------------------------------------------
+
+    constructor(width: Int, height: Int) {
+        this.width = width
+        this.height = height
+    }
 
     override fun getImage(): BufferedImage {
+        // Create a transparent image object to draw on.
         var img: BufferedImage = BufferedImage(
                 this.width,
                 this.height,
                 BufferedImage.TYPE_INT_ARGB
         )
 
-        // Retrieve the graphics object generated from the background image.
+        // Retrieve the graphics object for the transparent image.
         var g: Graphics2D = img.getGraphics() as Graphics2D
 
         // Turn on antialising for text.
@@ -41,7 +56,6 @@ class GraphicsLayer(
             // Pass the image to each of the render objects in the stack
             gObj.render(g)
         }
-
         return img
     }
 
@@ -49,6 +63,11 @@ class GraphicsLayer(
         return this.getImage().getRaster()
     }
 
+    /**
+     * Add a GraphicsObject to this layer for drawing.
+     * @param[obj] Graphics object to add.
+     * @post The layer will now be drawn with this GraphicsObject.
+     */
     fun addGraphicsObj(obj: GraphicsObject) {
         this.graphicsObjs.add(obj)
     }

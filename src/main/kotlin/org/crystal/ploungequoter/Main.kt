@@ -47,6 +47,10 @@ fun generatePloungeQuote(background_path: String?) {
 
     // Need to make a layer here.
 
+    val i: Int = renderer.addGraphicsLayer()
+    var layer: GraphicsLayer = renderer.getLayer(i) as GraphicsLayer
+    layer.addGraphicsObj(quote)
+
     //renderer.addRenderObj(quote)
     println("Rendering...")
     renderer.render(PNGTYPE,File(OUTPUT_PATH))

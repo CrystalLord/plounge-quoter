@@ -15,7 +15,7 @@ enum class Alignment {
     CENTRE
 }
 
-class Text : RenderObject {
+class Text : GraphicsObject {
 
 
     companion object {

@@ -12,7 +12,12 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
+ * The Renderer stores all visual objects, then when finally processing, it
+ * can generate an output file.
  *
+ * To use this class, add layers to the renderer, then call render.
+ *
+ * @param[backgroundPath] Path that details where the background image is.
  */
 class Renderer(val backgroundPath: Path?) {
 
@@ -20,16 +25,12 @@ class Renderer(val backgroundPath: Path?) {
      * List of layers in the program.
      */
     private var layers: MutableList<RenderLayer>
+    /**
+     * The stored overarching image.
+     */
+    private var img: BufferedImage
 
     init {
-        // Assign the render object list to an empty list.
-        this.layers = mutableListOf<RenderLayer>()
-    }
-
-    /**
-     * Render all render objects into a file.
-     */
-    fun render(outputType: String, outputFile: File) {
         // Check to make sure we actually have a background first.
         if (this.backgroundPath == null
                 || this.backgroundPath == Paths.get("")) {
@@ -38,39 +39,51 @@ class Renderer(val backgroundPath: Path?) {
             throw IllegalStateException("Background file not found.")
         }
 
+        // Assign the render object list to an empty list.
+        this.layers = mutableListOf<RenderLayer>()
         try {
-            // Read the background image file in.
-            // Note, the background is the base layer for the rendering system.
-            // Sensibly, this would be changed for a more general
-            // implementation.
-            var img: BufferedImage = ImageIO.read(this.backgroundPath.toFile())
-            var overarchingGraphics: Graphics2D = img.createGraphics()
+            this.img = ImageIO.read(this.backgroundPath?.toFile())
 
-            // Render all the objects in the queue.
-            for (layer in this.layers) {
-                // Pass each of the layers into the overarching graphics.
-
-                overarchingGraphics.drawImage(
-                        layer.getImage(), // The image to draw
-                        AffineTransformOp(
-                                AffineTransform(),
-                                AffineTransformOp.TYPE_BICUBIC
-                        ), // Identity transformation
-                        0, // x pos
-                        0 // y pos
-                )
+            if (this.img != null) {
+                println("Renderer Loaded Background")
             }
-
-            // TODO:
-            // Consider closing the graphics object here?
-
-            // Actually write the file
-            ImageIO.write(img,outputType,outputFile)
-            //ImageIO.write(textLayer,outputType,File("/home/crystal/test.png"))
-
         } catch (e: IllegalStateException) {
             throw IllegalStateException("Background file could not be read.")
         }
+    }
+
+    /**
+     * Render all render objects into a file.
+     * @param[outputType] The file type for the output, as a string.
+     * @param[outputFile] The File to actually output to.
+     */
+    fun render(outputType: String, outputFile: File) {
+        // Read the background image file in.
+        // Note, the background is the base layer for the rendering system.
+        // Sensibly, this would be changed for a more general
+        // implementation.
+        var overarchingGraphics: Graphics2D = img.createGraphics()
+
+        // Render all the objects in the queue.
+        for (layer in this.layers) {
+            // Pass each of the layers into the overarching graphics.
+
+            overarchingGraphics.drawImage(
+                    layer.getImage(), // The image to draw
+                    AffineTransformOp(
+                            AffineTransform(),
+                            AffineTransformOp.TYPE_BICUBIC
+                    ), // Identity transformation
+                    0, // x pos
+                    0 // y pos
+            )
+        }
+
+        // TODO:
+        // Consider closing the graphics object here?
+
+        // Actually write the file
+        ImageIO.write(img,outputType,outputFile)
     }
 
     /**
@@ -87,4 +100,33 @@ class Renderer(val backgroundPath: Path?) {
         this.layers.add(layer)
     }
 
+    /**
+     * Place a transparent RasterLayer on the render queue
+     *
+     * Ideally, this would return an iterator to the newly added layer. But not
+     * quite sure how to do this in Kotlin yet.
+     *
+     * @return The index of the newly added layer.
+     */
+    fun addRasterLayer(): Int {
+        var newLayer: RasterLayer = RasterLayer(
+                this.img.getWidth(),
+                this.img.getHeight()
+        )
+        this.layers.add(newLayer)
+        return (this.layers.size - 1)
+    }
+
+    /**
+     * Place a transparent GraphicsLayer on the render queue
+     * @return The index of the newly added layer.
+     */
+    fun addGraphicsLayer(): Int {
+        var newLayer: GraphicsLayer = GraphicsLayer(
+                this.img.getWidth(),
+                this.img.getHeight()
+        )
+        this.layers.add(newLayer)
+        return (this.layers.size - 1)
+    }
 }
