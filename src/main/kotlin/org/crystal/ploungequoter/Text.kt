@@ -12,16 +12,18 @@ import java.awt.FontMetrics
 enum class Alignment {
     LEFT,
     RIGHT,
-    CENTRE
+    CENTER
 }
 
 class Text : GraphicsObject {
 
 
     companion object {
-        /** The default Settings */
+        /** The default font */
         val DEFAULT_FONT = Font("SansSerif", Font.PLAIN, 12)
+        /** The default anchor setting */
         val DEFAULT_ANCHOR = Anchor.TOP_LEFT
+        /** The default line space factor. */
         val DEFAULT_LINE_SPACE = 1
     }
 
@@ -158,7 +160,7 @@ class Text : GraphicsObject {
         var shift: Int = 0
         when (this.alignment) {
             Alignment.RIGHT -> shift = -lineWidth + this.getWidth(g)
-            Alignment.CENTRE -> shift = -lineWidth/2 + this.getWidth(g)
+            Alignment.CENTER -> shift = -lineWidth/2 + this.getWidth(g)
             else -> shift = 0
         }
         return shift
@@ -188,16 +190,16 @@ class Text : GraphicsObject {
                         -this.getHeight(g).toFloat()
                 )
             }
-            Anchor.TOP_CENTRE -> {
+            Anchor.TOP_CENTER -> {
                 shift = Vector2(-this.getWidth(g).toFloat()/2f, 0f)
             }
-            Anchor.BOT_CENTRE -> {
+            Anchor.BOT_CENTER -> {
                 shift = Vector2(
                         -this.getWidth(g).toFloat()/2f,
                         -this.getHeight(g).toFloat()
                 )
             }
-            Anchor.CENTRE_CENTRE -> {
+            Anchor.CENTER_CENTER -> {
                 shift = Vector2(
                         -this.getWidth(g).toFloat()/2f,
                         -this.getHeight(g).toFloat()/2f

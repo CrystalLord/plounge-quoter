@@ -5,7 +5,7 @@ enum class Anchor {
     TOP_RIGHT,
     BOT_LEFT,
     BOT_RIGHT,
-    TOP_CENTRE,
-    BOT_CENTRE,
-    CENTRE_CENTRE,
+    TOP_CENTER,
+    BOT_CENTER,
+    CENTER_CENTER,
 }
