@@ -6,6 +6,7 @@ import java.nio.file.Path
 import org.apache.commons.cli.Options
 import java.awt.Color
 import java.awt.Font
+import java.awt.image.WritableRaster
 
 fun main(args: Array<String>) {
     // Handle parsing.
@@ -41,15 +42,16 @@ fun generatePloungeQuote(background_path: String?) {
 
     var quote: Text = Text(Vector2(100.0f,100.0f))
     quote.setContent("HELLO\nWORLD!")
-    quote.font = Font("Inconsolata", Font.PLAIN, 10)
+    quote.font = Font("Inconsolata", Font.PLAIN, 20)
     quote.color = Color(0,0,255)
     quote.anchor = Anchor.BOT_LEFT
 
     // Need to make a layer here.
 
-    val i: Int = renderer.addGraphicsLayer()
-    var layer: GraphicsLayer = renderer.getLayer(i) as GraphicsLayer
-    layer.addGraphicsObj(quote)
+    var layer: RasterLayer = renderer.addRasterLayer()
+    var raster: WritableRaster = layer.getRaster()
+
+    raster.setPixel(0,0,intArrayOf(255,0,0,255))
 
     //renderer.addRenderObj(quote)
     println("Rendering...")

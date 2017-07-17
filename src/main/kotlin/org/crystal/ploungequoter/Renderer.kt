@@ -103,30 +103,27 @@ class Renderer(val backgroundPath: Path?) {
     /**
      * Place a transparent RasterLayer on the render queue
      *
-     * Ideally, this would return an iterator to the newly added layer. But not
-     * quite sure how to do this in Kotlin yet.
-     *
-     * @return The index of the newly added layer.
+     * @return The newly added RasterLayer
      */
-    fun addRasterLayer(): Int {
+    fun addRasterLayer(): RasterLayer {
         var newLayer: RasterLayer = RasterLayer(
                 this.img.getWidth(),
                 this.img.getHeight()
         )
         this.layers.add(newLayer)
-        return (this.layers.size - 1)
+        return newLayer
     }
 
     /**
      * Place a transparent GraphicsLayer on the render queue
-     * @return The index of the newly added layer.
+     * @return The newly added layer.
      */
-    fun addGraphicsLayer(): Int {
+    fun addGraphicsLayer(): GraphicsLayer {
         var newLayer: GraphicsLayer = GraphicsLayer(
                 this.img.getWidth(),
                 this.img.getHeight()
         )
         this.layers.add(newLayer)
-        return (this.layers.size - 1)
+        return newLayer
     }
 }
