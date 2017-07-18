@@ -8,6 +8,7 @@ import java.awt.Color
 import java.awt.Font
 import java.awt.image.WritableRaster
 
+
 fun main(args: Array<String>) {
     // Handle parsing.
     PQParser.parse(args)
@@ -42,16 +43,18 @@ fun generatePloungeQuote(background_path: String?) {
 
     var quote: Text = Text(Vector2(100.0f,100.0f))
     quote.setContent("HELLO\nWORLD!")
-    quote.font = Font("Inconsolata", Font.PLAIN, 20)
+    quote.font = Font("Inconsolata", Font.PLAIN, 40)
     quote.color = Color(0,0,255)
-    quote.anchor = Anchor.BOT_LEFT
+    quote.anchor = Anchor.TOP_LEFT
+    quote.alignment = Alignment.CENTER
 
     // Need to make a layer here.
 
-    var layer: RasterLayer = renderer.addRasterLayer()
-    var raster: WritableRaster = layer.getRaster()
+    var rlayer: RasterLayer = renderer.addRasterLayer()
+    rlayer.setPixel(0,0,255,0,0,255)
 
-    raster.setPixel(0,0,intArrayOf(255,0,0,255))
+    var glayer: GraphicsLayer = renderer.addGraphicsLayer()
+    glayer.addGraphicsObj(quote)
 
     //renderer.addRenderObj(quote)
     println("Rendering...")

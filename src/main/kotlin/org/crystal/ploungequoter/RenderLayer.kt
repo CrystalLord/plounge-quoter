@@ -6,14 +6,14 @@ import java.awt.image.WritableRaster
 interface RenderLayer {
     /**
      * Retrieve an Image representation of this layer.
-     * Modifying the object returned here will not modify the internals of the
-     * layer.
+     * Modifying the image returnew will cause modifications to the layer.
      */
     fun getImage(): BufferedImage
 
     /**
      * Retrieve a WritableRaster object of this layer.
-     * Note, this raster object is not gauranteed to be attached to the layer.
+     * Note, this raster object is attached to this layer, and modifying it will
+     * alter the layer.
      */
     fun getRaster(): WritableRaster
 }

@@ -4,17 +4,20 @@ import java.awt.Image
 import java.awt.Graphics2D
 
 /**
- * An abstract graphics object
+ * An abstract graphics object.
  *
  * An abstract class from which all vector objects that are rendered in an image
- * are derived from.
+ * are derived from. Internally, they do not use a raster to draw pixels.
+ * Instead, they use a Java AWT [Graphics2D][1] object to draw.
+ *
+ * [1]: https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics2D.html
  */
 abstract class GraphicsObject {
 
     // Absolute position
     var globalPosition: Vector2 = Vector2.ZERO
-    // Render objects allow parent
-    var parentObj: RenderObject? = null
+    // Graphics objects allow parents
+    var parentObj: GraphicsObject? = null
     // Anchor for the rendering
     var anchor: Anchor = Anchor.TOP_LEFT
 
@@ -45,12 +48,18 @@ abstract class GraphicsObject {
     abstract fun render(g: Graphics2D)
 
     /**
+     * Get the width of this GraphicsObject in pixels.
+     *
+     * @param[g] Graphics2D object of the layer to evaluate the width as.
      * @return Returns the width of the render object as an integer,
      * in pixels.
      */
     abstract fun getWidth(g: Graphics2D): Int
 
     /**
+     * Get the height of this GraphicsObject in pixels.
+     *
+     * @param[g] Graphics2D object of the layer to evaluate the height as.
      * @return Returns the height of the render object as an integer,
      * in pixels.
      */
