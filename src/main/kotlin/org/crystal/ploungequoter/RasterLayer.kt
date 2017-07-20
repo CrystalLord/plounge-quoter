@@ -84,4 +84,18 @@ class RasterLayer : RenderLayer {
             this.setPixel(p[0], p[1], col)
         }
     }
+
+    /**
+     * Retrieve a pixel's colours on this layer.
+     *
+     * @param[x] X position of the pixel.
+     * @param[y] Y position of the pixel.
+     * @return The pixel's RGBA colour.
+     */
+    fun getPixel(x: Int, y: Int): Color {
+        var arr: IntArray = intArrayOf(0,0,0,0)
+        this.raster.getPixel(x,y,arr)
+        val color: Color = Color(arr[0],arr[1],arr[2],arr[3])
+        return color
+    }
 }

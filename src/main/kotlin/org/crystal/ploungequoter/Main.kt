@@ -44,17 +44,20 @@ fun generatePloungeQuote(background_path: String?) {
     var quote: Text = Text(Vector2(100.0f,100.0f))
     quote.setContent("HELLO\nWORLD!")
     quote.font = Font("Inconsolata", Font.PLAIN, 40)
-    quote.color = Color(0,0,255)
+    quote.color = Color(255,255,255)
     quote.anchor = Anchor.TOP_LEFT
     quote.alignment = Alignment.CENTER
 
     // Need to make a layer here.
 
     var rlayer: RasterLayer = renderer.addRasterLayer()
-    rlayer.setPixel(0,0,255,0,0,255)
 
     var glayer: GraphicsLayer = renderer.addGraphicsLayer()
     glayer.addGraphicsObj(quote)
+
+    var outliner: Outliner = Outliner()
+    outliner.growthRadius = 2.0
+    outliner.outline(glayer, rlayer)
 
     //renderer.addRenderObj(quote)
     println("Rendering...")
