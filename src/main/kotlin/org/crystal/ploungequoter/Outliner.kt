@@ -5,6 +5,8 @@ import java.awt.image.WritableRaster
 import java.awt.Color
 import java.awt.Rectangle
 import org.crystal.struct.Queue
+import org.crystal.struct.IntMatrix
+
 
 class Outliner {
     var color: Color
@@ -32,20 +34,19 @@ class Outliner {
      * @param[writeLayer] Raster layer to write the outline on.
      * @post writeLayer is rewritten to outline
      */
-    fun outline(layerToOutline: RenderLayer, writeLayer: RasterLayer) {
-        val rasterToOutline: WritableRaster = layerToOutline.getRaster()
-        val width: Int = rasterToOutline.getBounds().width
-        val height: Int = rasterToOutline.getBounds().height
+    fun outline(readLayer: RenderLayer, writeLayer: RasterLayer) {
+        val readRaster = readLayer.getRaster()
+        val width: Int = readRaster.getBounds().width
+        val height: Int = readRaster.getBounds().height
 
         var allocatedSamples: IntArray = intArrayOf(0,0,0,0)
-        var count: Int = 0
         var queue: Queue<SelectionSample> = Queue<SelectionSample>()
 
         // Grab opaque colours and put them in a queue.
         println("Finding...")
         for (y: Int in 0 until height) {
             for (x: Int in 0 until width) {
-                rasterToOutline.getPixel(
+                readRaster.getPixel(
                         x,
                         y,
                         allocatedSamples
@@ -62,7 +63,10 @@ class Outliner {
 
         // Growing the selection.
         println("Growing...")
-        var colorQueue: Queue<SelectionSample> = Queue<SelectionSample>()
+        var selectionMask: IntMatrix = IntMatrix(
+                writeLayer.getImage().getWidth(),
+                writeLayer.getImage().getHeight()
+        )
 
         if (this.growthRadius > 0.0) {
             while (!queue.isEmpty()) {
@@ -81,55 +85,41 @@ class Outliner {
                             growthQueue.dequeue()
                             ?: throw RuntimeException()
                     )
-                    colorQueue.enqueue(s)
+
+                    // Check to make sure that the we are within the matrix
+                    // bounds
+                    if (selectionMask.inMatrix(s.pos.x, s.pos.y)) {
+                        val currentMaskVal: Int = selectionMask.getXY(
+                                s.pos.x,
+                                s.pos.y
+                        )
+                        // Set only the alpha which is largest in the selection
+                        // mask.
+                        selectionMask.setXY(
+                                s.pos.x,
+                                s.pos.y,
+                                Math.max(
+                                        currentMaskVal.toInt(),
+                                        s.a
+                                ).toInt()
+                        )
+                    }
                 }
             }
-        } else {
-            // If we aren't growing, just assign the colorQueue directly.
-            colorQueue = queue
         }
 
-        // Iterate through the opaque queue and assign colours.
+        // Now fill in the writeLayer...
         println("Writing...")
-        while (!colorQueue.isEmpty()) {
-            // Get the first item from the queue.
-            val selected: SelectionSample = (
-                    colorQueue.dequeue()
-                    ?: throw RuntimeException()
-            )
-            val pX: Int = selected.pos.x
-            val pY: Int = selected.pos.y
-            val aFrac: Double = selected.a.toDouble() / 255.0
-            // Calculate the colour to Add to the image.
-            val colorAdd: Color = Color(
-                    (this.color.getRed().toDouble() * aFrac).toInt(),
-                    (this.color.getGreen().toDouble() * aFrac).toInt(),
-                    (this.color.getBlue().toDouble() * aFrac).toInt(),
-                    (this.color.getAlpha().toDouble() * aFrac).toInt()
-            )
-            val currCol: Color = writeLayer.getPixel(pX,pY)
-            val invARed = (currCol.getRed().toDouble() * (1-aFrac)).toInt()
-            val invAGreen = (currCol.getRed().toDouble() * (1-aFrac)).toInt()
-            val invABlue = (currCol.getRed().toDouble() * (1-aFrac)).toInt()
-
-            writeLayer.setPixel(
-                    pX,
-                    pY,
-                    Color(
-                            (invARed + colorAdd.getRed())/2,
-                            (invAGreen + colorAdd.getGreen())/2,
-                            (invABlue + colorAdd.getBlue())/2,
-                            Math.min(
-                                    currCol.getAlpha() + colorAdd.getAlpha(),
-                                    255
-                            ).toInt()
-                    )
-            )
-        }
+        this.fillMask(selectionMask, writeLayer)
     }
 
     /**
-     * Retrieve a queue of SelectionSamples.
+     * Retrieve a queue of SelectionSamples that list the alphas and positions
+     * of each pixel that needs to be selected.
+     *
+     * @param[center] The center of the circle to select.
+     * @param[radius] The radius of the circle to select.
+     * @return Returns a Queue of SelectionSamples.
      */
     private fun getCircleSelection(
             center: Vector2Int,
@@ -171,7 +161,70 @@ class Outliner {
                 )
             }
         }
-
         return selectQueue
+    }
+
+
+    /**
+     * Given an IntMatrix of alphas, fill the image by mixing in
+     * the Outliner's colours.
+     * @param[selectionMask] An IntMatrix which stores the Alphas for each
+     * pixel.
+     * @param[writeLayer] Layer to write on with the selectionMask.
+     * @post The writeLayer is filled with the Outliner's colour.
+     */
+    private fun fillMask(selectionMask: IntMatrix, writeLayer: RasterLayer) {
+        // Current X and Y positions in the matrix for iteration purposes.
+        var currX: Int = 0
+        var currY: Int = 0
+        while (currY < selectionMask.height) {
+            // If we went too far to the right, move down to the next
+            // row in the matrix.
+            if (currX >= selectionMask.width) {
+                currX = 0
+                currY++
+                continue
+            }
+
+            // Gather the alpha fraction for multiplication.
+            val aFrac: Double = selectionMask.getXY(
+                    currX,
+                    currY
+            ).toDouble() / 255.0
+
+            // store the colour in a shorter name.
+            val myCol: Color = this.color
+
+
+            // Calculate the colour to mix with the image.
+            val aRed: Int = (myCol.getRed().toDouble() * aFrac).toInt()
+            val aGreen: Int = (myCol.getGreen().toDouble() * aFrac).toInt()
+            val aBlue: Int = (myCol.getBlue().toDouble() * aFrac).toInt()
+            val aAlpha: Int = (myCol.getAlpha().toDouble() * aFrac).toInt()
+
+            // Get the colours stored on the write layer currently.
+            val wCol: Color = writeLayer.getPixel(currX,currY)
+            val invARed = (wCol.getRed().toDouble() * (1-aFrac)).toInt()
+            val invAGreen = (wCol.getRed().toDouble() * (1-aFrac)).toInt()
+            val invABlue = (wCol.getRed().toDouble() * (1-aFrac)).toInt()
+
+            // Actually write the colour.
+            writeLayer.setPixel(
+                    currX,
+                    currY,
+                    Color(
+                            invARed + aRed,
+                            invAGreen + aGreen,
+                            invABlue + aBlue,
+                            Math.min(
+                                    wCol.getAlpha() + aAlpha,
+                                    255
+                            ).toInt()
+                    )
+            )
+            // Make sure to increment to the next column.
+            currX++
+        }
+
     }
 }

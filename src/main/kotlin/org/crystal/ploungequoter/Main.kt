@@ -8,10 +8,23 @@ import java.awt.Color
 import java.awt.Font
 import java.awt.image.WritableRaster
 
+import java.awt.GraphicsEnvironment
 
 fun main(args: Array<String>) {
     // Handle parsing.
     PQParser.parse(args)
+    /*
+    var fonts = (
+            GraphicsEnvironment
+            .getLocalGraphicsEnvironment()
+            .getAvailableFontFamilyNames()
+    )
+
+    for (f in fonts)
+    {
+      println(f)
+    }
+    */
     // Make sure not to do anything if we're using help.
     if (!PQParser.isHelp) {
         // Generate the PLounge Quote.
@@ -41,26 +54,27 @@ fun generatePloungeQuote(background_path: String?) {
             Paths.get(background_path)
     var renderer: Renderer = Renderer(backgroundImagePath)
 
-    var quote: Text = Text(Vector2(100.0f,100.0f))
-    quote.setContent("I got plounge quoter working.\n"
-        +"----------------")
-    quote.font = Font("Impact", Font.PLAIN, 40)
+    var quote: Text = Text(Vector2(800.0f,100.0f))
+    val msg: String = ("I dunno where you've been hanging on the\ninternet "
+            +"where you ain't "
+            +"seeing lil Hitlets\nscampering around."
+    )
+    quote.setContent(msg)
+    quote.font = Font("Birds of Paradise  Personal use", Font.PLAIN, 40)
     quote.color = Color(255,255,255,255)
-    quote.anchor = Anchor.TOP_LEFT
+    quote.anchor = Anchor.TOP_CENTER
     quote.alignment = Alignment.CENTER
 
-    // Need to make a layer here.
-
+    // Make the layers now.
     var rlayer: RasterLayer = renderer.addRasterLayer()
-
     var glayer: GraphicsLayer = renderer.addGraphicsLayer()
     glayer.addGraphicsObj(quote)
 
     var outliner: Outliner = Outliner()
     outliner.growthRadius = 2.0
     outliner.outline(glayer, rlayer)
-    outliner.color = Color(0,0,0,2)
-    outliner.growthRadius = 10.0
+    outliner.color = Color(0,0,0,170)
+    outliner.growthRadius = 3.0
     outliner.outline(glayer, rlayer)
 
     //renderer.addRenderObj(quote)
