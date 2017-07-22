@@ -28,8 +28,8 @@ class Outliner {
     /**
      * Outline a layer to another write layer.
      *
-     * @param[layerToOutline]
-     * @param
+     * @param[layerToOutline] Render layer to get opaque from.
+     * @param[writeLayer] Raster layer to write the outline on.
      * @post writeLayer is rewritten to outline
      */
     fun outline(layerToOutline: RenderLayer, writeLayer: RasterLayer) {

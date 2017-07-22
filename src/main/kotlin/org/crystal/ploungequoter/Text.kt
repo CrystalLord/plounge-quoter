@@ -119,6 +119,7 @@ class Text : GraphicsObject {
         for (i: Int in this.contentList.indices) {
             // Retrieve the line position using alignments.
             // Convert pts to pixels
+            // TODO: Fix this. It's not correct.
             val pixelSpacing: Int = Utils.ptsToPixels(this.lineSpacing)
             // Create shifts for the text
             val vertShift: Int = i * (metrics.getHeight() + pixelSpacing)
@@ -148,10 +149,13 @@ class Text : GraphicsObject {
 
 
     /**
-     * Retrieve the number of pixels that must be
-     * @param g Graphics2D object to get the font Metrics for.
-     * @param line Line of text represents one, unbroken (with carriage returns)
-     * line of text.
+     * Retrieve the number of pixels that this text object must be shifted
+     * so that it can be aligned properly with either left, right or centre
+     * justification.
+     *
+     * @param[g] Graphics2D object to get the font Metrics for.
+     * @param[line] Line of text represents one, unbroken (with carriage
+     * returns) line of text.
      * @return Returns the number of pixels this line of text should be shifted
      * such that the line is aligned correctly.
      */
@@ -160,7 +164,7 @@ class Text : GraphicsObject {
         var shift: Int = 0
         when (this.alignment) {
             Alignment.RIGHT -> shift = -lineWidth + this.getWidth(g)
-            Alignment.CENTER -> shift = -lineWidth/2 + this.getWidth(g)
+            Alignment.CENTER -> shift = -lineWidth/2 + this.getWidth(g)/2
             else -> shift = 0
         }
         return shift

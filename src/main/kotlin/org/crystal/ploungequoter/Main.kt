@@ -42,9 +42,10 @@ fun generatePloungeQuote(background_path: String?) {
     var renderer: Renderer = Renderer(backgroundImagePath)
 
     var quote: Text = Text(Vector2(100.0f,100.0f))
-    quote.setContent("HELLO\nWORLD!")
-    quote.font = Font("Inconsolata", Font.PLAIN, 40)
-    quote.color = Color(255,255,255)
+    quote.setContent("I got plounge quoter working.\n"
+        +"----------------")
+    quote.font = Font("Impact", Font.PLAIN, 40)
+    quote.color = Color(255,255,255,255)
     quote.anchor = Anchor.TOP_LEFT
     quote.alignment = Alignment.CENTER
 
@@ -57,6 +58,9 @@ fun generatePloungeQuote(background_path: String?) {
 
     var outliner: Outliner = Outliner()
     outliner.growthRadius = 2.0
+    outliner.outline(glayer, rlayer)
+    outliner.color = Color(0,0,0,2)
+    outliner.growthRadius = 10.0
     outliner.outline(glayer, rlayer)
 
     //renderer.addRenderObj(quote)

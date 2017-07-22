@@ -71,7 +71,13 @@ class RasterLayer : RenderLayer {
      * @param[a] Alpha component of the colour.
      */
     fun setPixel(x: Int, y: Int, r: Int, g: Int, b: Int, a: Int) {
-        this.raster.setPixel(x,y,intArrayOf(r,g,b,a))
+        if (
+                0 <= x && x < this.img.getWidth()
+                && 0 <= y && y < this.img.getHeight()
+        ) {
+            this.raster.setPixel(x,y,intArrayOf(r,g,b,a))
+        }
+        // If we're outside the bounds, do nothing.
     }
 
     /**
@@ -93,9 +99,16 @@ class RasterLayer : RenderLayer {
      * @return The pixel's RGBA colour.
      */
     fun getPixel(x: Int, y: Int): Color {
-        var arr: IntArray = intArrayOf(0,0,0,0)
-        this.raster.getPixel(x,y,arr)
-        val color: Color = Color(arr[0],arr[1],arr[2],arr[3])
-        return color
+        if (
+                0 <= x && x < this.img.getWidth()
+                && 0 <= y && y < this.img.getHeight()
+        ) {
+            var arr: IntArray = intArrayOf(0,0,0,0)
+            this.raster.getPixel(x,y,arr)
+            val color: Color = Color(arr[0],arr[1],arr[2],arr[3])
+            return color
+        } else {
+            return Color(0,0,0,0)
+        }
     }
 }
