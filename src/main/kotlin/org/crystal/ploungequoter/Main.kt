@@ -55,10 +55,11 @@ fun generatePloungeQuote(background_path: String?) {
     var renderer: Renderer = Renderer(backgroundImagePath)
 
     var quote: Text = Text(Vector2(800.0f,100.0f))
-    val msg: String = ("I dunno where you've been hanging on the\ninternet "
-            +"where you ain't "
-            +"seeing lil Hitlets\nscampering around."
-    )
+    val msg: String = "Hello World!"
+    //val msg: String = ("I dunno where you've been hanging on the\ninternet "
+    //        +"where you ain't "
+    //        +"seeing lil Hitlets\nscampering around."
+    //)
     quote.setContent(msg)
     quote.font = Font("Birds of Paradise  Personal use", Font.PLAIN, 40)
     quote.color = Color(255,255,255,255)
