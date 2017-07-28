@@ -15,37 +15,58 @@ import org.apache.commons.cli.MissingOptionException
 class PQParser {
     companion object {
         private var cmd: CommandLine? = null
-        private var options: Options = Options()
-        private var parser: CommandLineParser = DefaultParser()
+        private val options: Options = Options()
+        private val parser: CommandLineParser = DefaultParser()
         private var formatter: HelpFormatter = HelpFormatter()
-        private var usage: String = (
-                "java -jar ploungequoter BACKGND"
+        private val usage: String = (
+                "java -jar ploungequoter.jar [-h][-f][-b BACKGND]"
         )
-        private var head: String = "Generate an image for a Plounge Quote"
-        private var footer: String = "Created by /u/CrystalLord (2017)"
+        private val head: String = "Generate an image for a Plounge Quote"
+        private val footer: String = "Created by /u/CrystalLord (2017)"
 
+        /** Should we print out the available fonts? */
+        var showFonts: Boolean = false
+        /** Did the user ask for help? */
         var isHelp: Boolean = false
 
         fun parse(args: Array<String>) {
             // Use the option builder to create a standard Java-style
             // option.
-            var background: Option = (
+            val help: Option =
+                    Option.builder("h")
+                    .longOpt("help")
+                    .build()
+            val background: Option =
                     Option.builder("b")
-                    .required(true)
                     .longOpt("background")
                     .hasArg()
                     .build()
-            )
+            val showFonts: Option =
+                    Option.builder("f")
+                    .longOpt("fonts")
+                    .build()
 
+            // Add each option to the options object so that we can parse
+            // them correctly.
+            this.options.addOption(help)
             this.options.addOption(background)
+            this.options.addOption(showFonts)
 
             try {
                 this.cmd = this.parser.parse(options, args)
+                // Check if asked for help
+                if (this.cmd?.hasOption('h') ?: false) {
+                    this.isHelp = true
+                }
+                // Check if we've asked to print fonts.
+                if (this.cmd?.hasOption("fonts") ?: false) {
+                    this.showFonts = true
+                }
             } catch (e: UnrecognizedOptionException) {
                 // If we used an incorrect option, print the help.
                 this.printHelp()
             } catch (e: MissingOptionException) {
-                // If we forgot the background, print help.
+                // If we forgot something, print help.
                 this.printHelp()
             }
         }
@@ -61,7 +82,7 @@ class PQParser {
         }
 
         /**
-         *
+         * Print out the usage and help of the program.
          */
         fun printHelp() {
             this.isHelp = true
@@ -74,8 +95,6 @@ class PQParser {
             )
 
         }
-
-
     }
 
 }

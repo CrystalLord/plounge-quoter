@@ -10,3 +10,6 @@
 target/
 *.jar
 *.class
+
+# IntelliJ directory
+.idea/

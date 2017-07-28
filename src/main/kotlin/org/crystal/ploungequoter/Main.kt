@@ -3,32 +3,24 @@ package org.crystal.ploungequoter
 import java.io.File
 import java.nio.file.Paths
 import java.nio.file.Path
-import org.apache.commons.cli.Options
 import java.awt.Color
 import java.awt.Font
-import java.awt.image.WritableRaster
-
 import java.awt.GraphicsEnvironment
 
 fun main(args: Array<String>) {
     // Handle parsing.
     PQParser.parse(args)
-    /*
-    var fonts = (
-            GraphicsEnvironment
-            .getLocalGraphicsEnvironment()
-            .getAvailableFontFamilyNames()
-    )
-
-    for (f in fonts)
-    {
-      println(f)
-    }
-    */
-    // Make sure not to do anything if we're using help.
+    // Make sure not to do anything if we're using a help flag.
     if (!PQParser.isHelp) {
-        // Generate the PLounge Quote.
-        generatePloungeQuote(PQParser.getBackground())
+        if (PQParser.showFonts) {
+            // Print out all available fonts so that we can actually see what
+            // fonts are available.
+            printFonts()
+        } else {
+            // Generate the PLounge Quote only if all other requirements have
+            // been met.
+            generatePloungeQuote(PQParser.getBackground())
+        }
     }
 }
 
@@ -39,7 +31,7 @@ fun main(args: Array<String>) {
  */
 fun generatePloungeQuote(background_path: String?) {
     val PNGTYPE: String = "png"
-    val JPGTYPE: String = "jpg"
+    //val JPGTYPE: String = "jpg"
     val OUTPUT_PATH: String = "output_new.png"
 
 
@@ -50,11 +42,11 @@ fun generatePloungeQuote(background_path: String?) {
         throw IllegalArgumentException("background_path was null.")
     }
 
-    var backgroundImagePath: Path =
+    val backgroundImagePath: Path =
             Paths.get(background_path)
-    var renderer: Renderer = Renderer(backgroundImagePath)
+    val renderer: Renderer = Renderer(backgroundImagePath)
 
-    var quote: Text = Text(Vector2(800.0f,100.0f))
+    val quote: Text = Text(Vector2(800.0f,100.0f))
     val msg: String = ("I dunno where you've been hanging on the\ninternet "
             +"where you ain't "
             +"seeing lil Hitlets\nscampering around."
@@ -66,11 +58,11 @@ fun generatePloungeQuote(background_path: String?) {
     quote.alignment = Alignment.CENTER
 
     // Make the layers now.
-    var rlayer: RasterLayer = renderer.addRasterLayer()
-    var glayer: GraphicsLayer = renderer.addGraphicsLayer()
+    val rlayer: RasterLayer = renderer.addRasterLayer()
+    val glayer: GraphicsLayer = renderer.addGraphicsLayer()
     glayer.addGraphicsObj(quote)
 
-    var outliner: Outliner = Outliner()
+    val outliner: Outliner = Outliner()
     outliner.growthRadius = 2.0
     outliner.outline(glayer, rlayer)
     outliner.color = Color(0,0,0,170)
@@ -81,4 +73,20 @@ fun generatePloungeQuote(background_path: String?) {
     println("Rendering...")
     renderer.render(PNGTYPE,File(OUTPUT_PATH))
     print("Output at: "); println(OUTPUT_PATH)
+}
+
+/**
+ * Print out the system fonts available for the quoter.
+ */
+fun printFonts() {
+    val fonts = (
+            GraphicsEnvironment
+            .getLocalGraphicsEnvironment()
+            .availableFontFamilyNames
+    )
+
+    for (f in fonts)
+    {
+      println(f)
+    }
 }
