@@ -7,17 +7,18 @@ import java.awt.image.WritableRaster
 
 /**
  * Layer which uses the underlying Java AWT Graphics object to render itself.
+ *
+ * @param[width] Width of the graphics layer in pixels.
+ * @param[height] Height of the graphics layer in pixels.
  */
-class GraphicsLayer : RenderLayer {
+class GraphicsLayer(
+        private var width: Int,
+        private var height: Int
+) : RenderLayer {
 
     // ------------------------------------------------------------------------
     // Properties
     // ------------------------------------------------------------------------
-
-    // Width of the layer in pixels.
-    private var width: Int
-    // Height of the layer in pixels.
-    private var height: Int
 
     // The objects that are placed on this layer to be rendered
     private var graphicsObjs: MutableList<GraphicsObject> = (
@@ -28,24 +29,20 @@ class GraphicsLayer : RenderLayer {
     // Methods
     // ------------------------------------------------------------------------
 
-    constructor(width: Int, height: Int) {
-        this.width = width
-        this.height = height
-    }
 
     override fun getImage(): BufferedImage {
         // Create a transparent image object to draw on.
-        var img: BufferedImage = BufferedImage(
+        val img: BufferedImage = BufferedImage(
                 this.width,
                 this.height,
                 BufferedImage.TYPE_INT_ARGB
         )
 
         // Retrieve the graphics object for the transparent image.
-        var g: Graphics2D = img.getGraphics() as Graphics2D
+        val g: Graphics2D = img.graphics as Graphics2D
 
         // Turn on antialising for text.
-        var hints: RenderingHints = RenderingHints(
+        val hints: RenderingHints = RenderingHints(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON
         )
