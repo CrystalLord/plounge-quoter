@@ -1,23 +1,32 @@
 package org.crystal.ploungequoter
 
 /**
+ * A way to represent integer based vectors.
  *
- */
+ * It supports addition, scaling, and a Zero vector.
+*/
 class Vector2Int {
 
     // This creates a singleton that allows us to
     // retrieve the ZERO property like a Java static class.
-    companion object Statics {
+    companion object {
+        /** Retrieve a zero vector */
         val ZERO: Vector2Int = Vector2Int()
     }
 
-    // Components
-    var x: Int
-    var y: Int
+    /** X component of the vector */
+    val x: Int
+    /** Y component of the vector */
+    val y: Int
 
-    // Empty constructor
-    constructor() : this(0,0) {}
+    /** Empty constructor creates a zero vector*/
+    constructor() : this(0,0)
 
+    /**
+     * Construct a Vector2Int from 2 Integers
+     * @param[setX] X component of the new vector.
+     * @param[setY] Y component of the new vector.
+     */
     constructor(setX: Int, setY: Int) {
         x = setX
         y = setY
