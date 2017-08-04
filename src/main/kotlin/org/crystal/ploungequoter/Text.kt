@@ -93,6 +93,7 @@ class Text : GraphicsObject {
     override fun getHeight(g: Graphics2D): Int {
         val metrics: FontMetrics = g.getFontMetrics(this.font)
         val lineCount: Int = this.contentList.size
+        println(lineCount)
         return metrics.getHeight() * lineCount
     }
 
@@ -181,17 +182,17 @@ class Text : GraphicsObject {
         var shift: Vector2
 
         when (this.anchor) {
-            Anchor.TOP_LEFT -> shift = Vector2.ZERO
+            Anchor.TOP_LEFT -> shift = Vector2(0f,this.getHeight(g).toFloat())
             Anchor.TOP_RIGHT -> {
                 shift = Vector2(-this.getWidth(g).toFloat(), 0f)
             }
             Anchor.BOT_LEFT -> {
-                shift = Vector2(0f, -this.getHeight(g).toFloat())
+                shift = Vector2.ZERO
             }
             Anchor.BOT_RIGHT -> {
                 shift = Vector2(
                         -this.getWidth(g).toFloat(),
-                        -this.getHeight(g).toFloat()
+                        0f
                 )
             }
             Anchor.TOP_CENTER -> {
@@ -206,7 +207,7 @@ class Text : GraphicsObject {
             Anchor.CENTER_CENTER -> {
                 shift = Vector2(
                         -this.getWidth(g).toFloat()/2f,
-                        -this.getHeight(g).toFloat()/2f
+                        this.getHeight(g).toFloat()/2f
                 )
             }
         }

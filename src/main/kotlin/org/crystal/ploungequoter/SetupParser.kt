@@ -148,14 +148,8 @@ class SetupParser {
                 }
                 "typeface" -> quoteInfo.typefaceName = value
                 "contentfontsize" -> quoteInfo.contentFontSize = value.toInt()
-                "content" -> {
-                    // Replace the \n's.
-                    val actualContent: String = value.replace("\\n","\n")
-                    // Strip any leftover blanks too (there may be some
-                    // leading.)
-                    quoteInfo.content = actualContent
-                }
-                "author" -> quoteInfo.author = value
+                "content" -> quoteInfo.content = value.replace("\\n","\n")
+                "author" -> quoteInfo.author = value.replace("\\n","\n")
                 "authorfontsize" -> quoteInfo.authorFontSize = value.toInt()
                 else -> throw RuntimeException(
                         "Unknown Parameter given: "

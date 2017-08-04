@@ -30,7 +30,7 @@ enum class AuthorPos {
  */
 class QuoteInfo {
     /** The Anchor setting of the text object. */
-    var anchor: Anchor = Anchor.TOP_LEFT
+    var anchor: Anchor = Anchor.TOP_CENTER
     /** The alignment (justification) of the text object. */
     var alignment: Alignment = Alignment.CENTER
     /** The position (described by positionType), of the text object. */
@@ -48,13 +48,13 @@ class QuoteInfo {
     /** The style of the font, e.g. Italics, Bold, Plain, etc. */
     var contentFontStyle: Int = Font.PLAIN
     /** The size of the font, in pixels. */
-    var contentFontSize: Int = 40
+    var contentFontSize: Int = 80
     /** The character width of the text, in character counts. */
     var contentWidth: Int = 30
     /** The position of the Author text. */
     var authorPos: AuthorPos = AuthorPos.BOT_RIGHT
     /** The size of the author annotation. */
-    var authorFontSize: Int = 30
+    var authorFontSize: Int = 60
     /** The style of the author annotation, e.g. Italics, Bold, Plain, etc. */
     var authorFontStyle: Int = Font.ITALIC
     /** The raw string content. */
@@ -105,20 +105,17 @@ class QuoteInfo {
             AuthorPos.BOT_RIGHT -> {
                 authorText.alignment = Alignment.RIGHT
                 authorText.anchor = Anchor.BOT_RIGHT
-                authorText.globalPosition = (
-                        Vector2(imgWidth,imgHeight) + Vector2(-10, -10)
-                        )
+                authorText.globalPosition =
+                        Vector2(imgWidth,imgHeight)
             }
             AuthorPos.BOT_LEFT -> {
                 authorText.alignment = Alignment.LEFT
                 authorText.anchor = Anchor.BOT_LEFT
-                authorText.globalPosition = (
-                        Vector2(0,imgHeight) + Vector2(10, -10)
-                        )
+                authorText.globalPosition =
+                        Vector2(0,imgHeight)
             }
             else -> println("something's wrong help")
         }
-
         return authorText
     }
 }

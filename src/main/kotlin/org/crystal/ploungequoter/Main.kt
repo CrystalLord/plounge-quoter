@@ -2,12 +2,7 @@ package org.crystal.ploungequoter
 
 import sun.plugin.dom.exception.InvalidStateException
 import java.io.File
-import java.nio.file.Paths
-import java.nio.file.Path
-import java.awt.Color
-import java.awt.Font
 import java.awt.GraphicsEnvironment
-import java.security.InvalidParameterException
 
 fun main(args: Array<String>) {
     // Handle parsing.
@@ -24,13 +19,14 @@ fun main(args: Array<String>) {
             if (PQParser.getQuoteFile() != null) {
                 try {
                     println("Reading quote file...")
-                    val so = SetupParser.readQuoteFile(
+                    // Read the quote file.
+                    val so: SetupOutput = SetupParser.readQuoteFile(
                             File(PQParser
                             .getQuoteFile()
                             ?: throw NullPointerException())
                     )
                     println("Quote file successfully read.")
-                    println("Attempting to generate plounge quote...")
+                    println("Generate plounge quote...")
                     generatePloungeQuote(so.backgroundFile, so.quoteInfos)
                 } catch (e: NullPointerException) {
                     throw InvalidStateException("Quote file was null.")
@@ -61,32 +57,16 @@ fun generatePloungeQuote(backgroundFile: File?, quoteInfos: List<QuoteInfo>) {
     // Create the renderer with the background file
     val renderer: Renderer = Renderer(backgroundFile)
 
-    /*
-    quote.setContent(msg)
-    quote.font = Font("Birds of Paradise  Personal use", Font.PLAIN, 40)
-    quote.color = Color(255,255,255,255)
-    quote.anchor = Anchor.TOP_CENTER
-    quote.alignment = Alignment.CENTER
-
-    // Make the layers now.
-    val rlayer: RasterLayer = renderer.addRasterLayer()
-    val glayer: GraphicsLayer = renderer.addGraphicsLayer()
-    glayer.addGraphicsObj(quote)
-
-    val outliner: Outliner = Outliner()
-    outliner.growthRadius = 2.0
-    outliner.outline(glayer, rlayer)
-    outliner.color = Color(0,0,0,170)
-    outliner.growthRadius = 3.0
-    outliner.outline(glayer, rlayer)
-    */
-
-    addOutlinedQuoteLayers(renderer, quoteInfos[0])
+    // Iterate though the quote data and generate all the text.
+    for (quoteInfo: QuoteInfo in quoteInfos) {
+        addOutlinedQuoteLayers(renderer, quoteInfo)
+    }
 
     //renderer.addRenderObj(quote)
     println("Rendering...")
     renderer.render(PNGTYPE,File(OUTPUT_PATH))
-    print("Output at: "); println(OUTPUT_PATH)
+    print("Output at: ")
+    println(OUTPUT_PATH)
 }
 
 /**
@@ -104,7 +84,6 @@ fun addOutlinedQuoteLayers(renderer: Renderer, quoteInfo: QuoteInfo) {
     val gLayer: GraphicsLayer = renderer.addGraphicsLayer()
     val outliner: Outliner = Outliner()
 
-
     val contentText: Text = quoteInfo.getContentTextObj(
             rLayer.getImage().width,
             rLayer.getImage().height
@@ -112,7 +91,7 @@ fun addOutlinedQuoteLayers(renderer: Renderer, quoteInfo: QuoteInfo) {
 
     val authorText: Text = quoteInfo.getAuthorTextObj(
             rLayer.getImage().width,
-            rLayer.getImage().width
+            rLayer.getImage().height
     )
 
     gLayer.addGraphicsObj(contentText)
