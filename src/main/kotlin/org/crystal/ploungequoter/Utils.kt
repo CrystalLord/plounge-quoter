@@ -17,5 +17,34 @@ class Utils {
         fun ptsToPixels(pts: Float): Int {
             return Math.round(0.32183062433425f + 1.3192940509307f * pts)
         }
+
+        /**
+         * Strip white space at the beginning and end of the string.
+         * @param[s] string to strip.
+         * @return Returns the stripped string.
+         */
+        fun stripBlank(s: String): String {
+            val startRegex: Regex = Regex("^\\s+")
+            val startMatch: MatchResult? = startRegex.find(s)
+            val startingSliceIndex: Int
+
+            if (startMatch != null) {
+                startingSliceIndex = startMatch.range.last + 1
+            } else {
+                startingSliceIndex = 0
+            }
+
+            val endRegex: Regex = Regex("\\s+$")
+            val endMatch: MatchResult? = endRegex.find(s)
+            val endingSliceIndex: Int
+
+            if (endMatch != null) {
+                endingSliceIndex = endMatch.range.first
+            } else {
+                endingSliceIndex = s.length
+            }
+
+            return s.substring(startingSliceIndex, endingSliceIndex)
+        }
     }
 }

@@ -24,6 +24,7 @@ class Vector2Int {
 
     /**
      * Construct a Vector2Int from 2 Integers
+     *
      * @param[setX] X component of the new vector.
      * @param[setY] Y component of the new vector.
      */

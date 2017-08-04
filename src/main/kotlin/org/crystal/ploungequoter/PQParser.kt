@@ -41,6 +41,11 @@ class PQParser {
                     .longOpt("background")
                     .hasArg()
                     .build()
+            val quoteFile: Option =
+                    Option.builder("q")
+                    .longOpt("quotefile")
+                    .hasArg()
+                    .build()
             val showFonts: Option =
                     Option.builder("f")
                     .longOpt("fonts")
@@ -50,6 +55,7 @@ class PQParser {
             // them correctly.
             this.options.addOption(help)
             this.options.addOption(background)
+            this.options.addOption(quoteFile)
             this.options.addOption(showFonts)
 
             try {
@@ -57,10 +63,14 @@ class PQParser {
                 // Check if asked for help
                 if (this.cmd?.hasOption('h') ?: false) {
                     this.isHelp = true
-                }
-                // Check if we've asked to print fonts.
-                if (this.cmd?.hasOption("fonts") ?: false) {
+                    this.printHelp()
+                } else if (this.cmd?.hasOption("fonts") ?: false) {
                     this.showFonts = true
+                } else if (
+                        !(this.cmd?.hasOption('b') ?: false)
+                        && !(this.cmd?.hasOption('q') ?: false)) {
+                    this.isHelp = true
+                    this.printHelp()
                 }
             } catch (e: UnrecognizedOptionException) {
                 // If we used an incorrect option, print the help.
@@ -71,14 +81,14 @@ class PQParser {
             }
         }
 
-
+        /** Retrieve the background image path if set. Otherwise return null */
         fun getBackground(): String? {
             return this.cmd?.getOptionValue("background")
         }
 
-
-        fun getConfigFile(): String? {
-            return this.cmd?.getOptionValue("configFile")
+        /** Retrieve the quote file path if set. Otherwise return null */
+        fun getQuoteFile(): String? {
+            return this.cmd?.getOptionValue("quotefile")
         }
 
         /**

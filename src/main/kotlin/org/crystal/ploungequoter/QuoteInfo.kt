@@ -1,0 +1,124 @@
+package org.crystal.ploungequoter
+
+import java.awt.Color
+import java.awt.Font
+import java.awt.Rectangle
+
+enum class QuotePosType {
+    /** Absolute (global) pixel positioning */
+    ABS,
+    /** Positioning relative to image size */
+    IMAGE
+}
+
+/** Position types of the author text. */
+enum class AuthorPos {
+    /** Attached to the bottom right of the quote. */
+    BOT_RIGHT_ATTACHED,
+    /** Placed in the bottom right of the image. */
+    BOT_RIGHT,
+    /** Attached to the bottom left of the quote. */
+    BOT_LEFT_ATTACHED,
+    /** Placed in the bottom left of the image. */
+    BOT_LEFT
+}
+
+/**
+ * A data class to store qualities about a TextObject
+ * It allows easy storage and retrieval of a data, while also providing a way
+ * to generate a useful text object.
+ */
+class QuoteInfo {
+    /** The Anchor setting of the text object. */
+    var anchor: Anchor = Anchor.TOP_LEFT
+    /** The alignment (justification) of the text object. */
+    var alignment: Alignment = Alignment.CENTER
+    /** The position (described by positionType), of the text object. */
+    var position: Vector2 = Vector2(0.5f,0.5f)
+    /** The type of position. */
+    var positionType: QuotePosType = QuotePosType.IMAGE
+    /** The fill colour of the text. */
+    var fillColor: Color = Color.WHITE
+    /** The colour of the outline around the text. */
+    var outlineColor: Color = Color.BLACK
+    /** The thickness of the text outline in pixels. */
+    var outlineThickness: Double = 3.0
+    /** The name of the typeface to use. */
+    var typefaceName: String = "SansSerif"
+    /** The style of the font, e.g. Italics, Bold, Plain, etc. */
+    var contentFontStyle: Int = Font.PLAIN
+    /** The size of the font, in pixels. */
+    var contentFontSize: Int = 40
+    /** The character width of the text, in character counts. */
+    var contentWidth: Int = 30
+    /** The position of the Author text. */
+    var authorPos: AuthorPos = AuthorPos.BOT_RIGHT
+    /** The size of the author annotation. */
+    var authorFontSize: Int = 30
+    /** The style of the author annotation, e.g. Italics, Bold, Plain, etc. */
+    var authorFontStyle: Int = Font.ITALIC
+    /** The raw string content. */
+    var content: String = ""
+    /** The author of the quote, including any leading marks. */
+    var author: String = ""
+
+    fun getContentTextObj(imgWidth: Int, imgHeight: Int): Text {
+        val contentText: Text = Text()
+        contentText.alignment = alignment
+        contentText.setContent(content)
+        contentText.anchor = anchor
+        contentText.color = fillColor
+        contentText.font = Font(
+                this.typefaceName,
+                this.contentFontStyle,
+                this.contentFontSize
+        )
+
+        when (positionType) {
+            QuotePosType.ABS -> contentText.globalPosition = position
+            QuotePosType.IMAGE -> {
+                contentText.globalPosition =
+                        Vector2(position.x*imgWidth, position.y * imgHeight)
+            }
+        }
+
+        return contentText
+    }
+
+    /**
+     * Create a Text object for the author field.
+     * This method requires the width and height of the image for positioning
+     * purposes.
+     * @param[imgHeight] The height of the image in pixels.
+     */
+    fun getAuthorTextObj(imgWidth: Int, imgHeight: Int): Text {
+        val authorText: Text = Text()
+        authorText.setContent(this.author)
+        authorText.color = this.fillColor
+        authorText.font = Font(
+                this.typefaceName,
+                this.authorFontStyle,
+                this.authorFontSize
+        )
+
+        when (this.authorPos) {
+            AuthorPos.BOT_RIGHT -> {
+                authorText.alignment = Alignment.RIGHT
+                authorText.anchor = Anchor.BOT_RIGHT
+                authorText.globalPosition = (
+                        Vector2(imgWidth,imgHeight) + Vector2(-10, -10)
+                        )
+            }
+            AuthorPos.BOT_LEFT -> {
+                authorText.alignment = Alignment.LEFT
+                authorText.anchor = Anchor.BOT_LEFT
+                authorText.globalPosition = (
+                        Vector2(0,imgHeight) + Vector2(10, -10)
+                        )
+            }
+            else -> println("something's wrong help")
+        }
+
+        return authorText
+    }
+}

@@ -161,7 +161,7 @@ class Text : GraphicsObject {
      */
     private fun getAlignmentShift(g: Graphics2D, line: String): Int {
         val lineWidth: Int = this.getLineWidth(g, line)
-        var shift: Int = 0
+        var shift: Int
         when (this.alignment) {
             Alignment.RIGHT -> shift = -lineWidth + this.getWidth(g)
             Alignment.CENTER -> shift = -lineWidth/2 + this.getWidth(g)/2
@@ -178,7 +178,7 @@ class Text : GraphicsObject {
      * @param g Graphics object to evaluate the size of this Text.
      */
     private fun getAnchoredPosition(g: Graphics2D): Vector2 {
-        var shift: Vector2 = Vector2.ZERO
+        var shift: Vector2
 
         when (this.anchor) {
             Anchor.TOP_LEFT -> shift = Vector2.ZERO
@@ -209,7 +209,6 @@ class Text : GraphicsObject {
                         -this.getHeight(g).toFloat()/2f
                 )
             }
-            else -> shift = Vector2.ZERO
         }
         return this.globalPosition + shift
     }

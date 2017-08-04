@@ -23,6 +23,7 @@ class Vector2 {
 
     /**
      * Create a Vector2 from two Floats.
+     *
      * param[setX] Value of X component.
      * param[setY] Value of Y component.
      */
@@ -33,6 +34,7 @@ class Vector2 {
 
     /**
      * Create a Vector2 from two Ints.
+     *
      * param[setX] Value of X component.
      * param[setY] Value of Y component.
      */

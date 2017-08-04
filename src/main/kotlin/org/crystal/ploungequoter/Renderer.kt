@@ -6,10 +6,6 @@ import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
-import java.awt.RenderingHints
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 
 /**
  * The Renderer stores all visual objects, then when finally processing, it
@@ -19,34 +15,22 @@ import java.nio.file.Paths
  *
  * @param[backgroundPath] Path that details where the background image is.
  */
-class Renderer(val backgroundPath: Path?) {
+class Renderer(val backgroundFile: File) {
 
     /**
      * List of layers in the program.
      */
-    private var layers: MutableList<RenderLayer>
+    private var layers: MutableList<RenderLayer> = mutableListOf<RenderLayer>()
     /**
      * The stored overarching image.
      */
     private var img: BufferedImage
 
     init {
-        // Check to make sure we actually have a background first.
-        if (this.backgroundPath == null
-                || this.backgroundPath == Paths.get("")) {
-            throw IllegalStateException("No background file set.")
-        } else if (!Files.exists(backgroundPath)) {
-            throw IllegalStateException("Background file not found.")
-        }
-
         // Assign the render object list to an empty list.
-        this.layers = mutableListOf<RenderLayer>()
         try {
-            this.img = ImageIO.read(this.backgroundPath?.toFile())
-
-            if (this.img != null) {
-                println("Renderer Loaded Background")
-            }
+            this.img = ImageIO.read(this.backgroundFile)
+            println("Renderer Loaded Background")
         } catch (e: IllegalStateException) {
             throw IllegalStateException("Background file could not be read.")
         }

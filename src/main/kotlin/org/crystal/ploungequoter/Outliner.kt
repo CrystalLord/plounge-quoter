@@ -7,25 +7,27 @@ import java.awt.Rectangle
 import org.crystal.struct.Queue
 import org.crystal.struct.IntMatrix
 
-
-class Outliner {
+class Outliner() {
+    /** Color of the outline. */
     var color: Color
+    /** Radius of the selection feather in pixels. */
     var featherRadius: Int
+    /** Growth of the selection in pixels. */
     var growthRadius: Double
+    /** The threshold alpha value to consider to be "opaque". */
     var opacityThreshold: Int
 
-
-    private data class SelectionSample(
-            val pos: Vector2Int,
-            val a: Int
-    )
-
-    constructor() {
+    init {
         this.color = Color(0,0,0,255)
         this.featherRadius = 0
         this.growthRadius = 0.0
         this.opacityThreshold = 0
     }
+
+    private data class SelectionSample(
+            val pos: Vector2Int,
+            val a: Int
+    )
 
     /**
      * Outline a layer to another write layer.
@@ -227,4 +229,5 @@ class Outliner {
         }
 
     }
+
 }
