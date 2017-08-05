@@ -61,24 +61,28 @@ class SetupParser {
                 // Does the value line end in a backslash?
                 var lineContinues: Boolean = (lineList[1].last() == '\\')
                 // Handle continuation lines if there's a backslash at the end.
-                var count: Int = 1
+                var count: Int = 0
                 while (lineContinues) {
+                    count++ // Go to the next line.
                     val nextLine = Utils.stripBlank(lines[i+count])
                     value = value.substring(0,value.length-1) + nextLine
                     lineContinues = (nextLine.last() == '\\')
-                    count++ // Go to the next line.
-                    i++ // Make sure the entire parser also moves forwards.
                 }
+                i += count // Make sure the entire parser also moves forwards.
 
                 // -------------------------------------------------------------
 
                 // Catch cases where a quote line hasn't been set.
                 if (quoteInd < 0) {
                     if (parameterName == "background") {
-                        // TODO: Do some magic here.
                         // Allow both local file reading and URL parsing.
-                        // Currently it just reads local files.
-                        bgFile = File(value)
+
+                        // Retrieve the background regardless if it's a URL
+                        // or a local file.
+                        val backgroundRetriever: BackgroundRetriever =
+                                BackgroundRetriever(value)
+                        // Set the retrieved file.
+                        bgFile = backgroundRetriever.file
                         i++ // Remember to increment i
                         continue
                     } else {
@@ -162,6 +166,17 @@ class SetupParser {
                             .toFloat()
                     quoteInfo.contentRightBound = Utils.stripBlank(xy[1])
                             .toFloat()
+                }
+                "position" -> {
+                    val xy: List<String> = value.split(",")
+                    if (xy.size != 2) {
+                        throw RuntimeException("contentwrap not in correct " +
+                                "format.")
+                    }
+                    quoteInfo.position = Vector2(
+                            Utils.stripBlank(xy[0]).toFloat(),
+                            Utils.stripBlank(xy[1]).toFloat()
+                    )
                 }
                 else -> throw RuntimeException(
                         "Unknown Parameter given: "

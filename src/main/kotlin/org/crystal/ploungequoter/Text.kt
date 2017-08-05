@@ -236,52 +236,72 @@ class Text : GraphicsObject {
      * @param[leftBound] The left bound's pixel coordinate.
      * @param[rightBound] The right bound's pixel coordinate.
      * @param[g] The graphics object this TextObject is on.
+     * @post The Text object is wrapped within bounds.
      */
     private fun wrapToBound(leftBound: Int, rightBound: Int, g: Graphics2D) {
-        // This is quite an ugly function.
-        // It will keep running until it no longer needs to check whether
-        // the content needs to be updated. So what does that mean?
-        // If there was a line that was too long (pixel wise), then it will
-        // effectively edit that line, and insert a newline.
-        // It will then reset this Text object's content, then check again if
-        // the all the lines are the correct length.
+        val newContentList: MutableList<String> = mutableListOf()
 
-        var newContent: String = ""
-        // Has the content changed in the last loop iteration? If so, we'll
-        // need to check whether it's within the wrapping bounds.
-        var needCheck: Boolean = true
-        while (needCheck) {
-            needCheck = false
-            for (i in this.contentList.indices) {
-                var line: String = this.contentList[i]
-                val rightEdge: Int = this.getRightEdgeOfLine(g, line)
-                val leftEdge: Int = this.getLeftEdgeOfLine(g, line)
-                val tooLong: Boolean = (rightEdge > rightBound
-                        || leftEdge < leftBound
-                        )
-
-                // If the line is too long, and also has a blank in it, insert
-                // a newline at the last space available.
-                if (tooLong && Utils.hasBlank(this.contentList[i])) {
-                    needCheck = true
-                    line = Utils.insertEndNewline(line)
-                }
-
-                if (i != this.contentList.size - 1) {
-                    if (needCheck) {
-                        newContent += line + " "
-                    } else {
-                        newContent += line + "\n"
-                    }
-                } else {
-                    newContent += line
-                }
-            }
-
-            this.setContent(newContent)
-            // Make sure to reset the new content.
-            newContent = ""
+        for (line: String in this.contentList) {
+            newContentList.addAll(
+                    this.cascadeWrap(leftBound, rightBound, line, g)
+            )
         }
+
+        this.contentList = newContentList
+    }
+
+    /**
+     * Cascade wrap a single line using left and right bounds.
+     *
+     * @param[leftBound] The left bound's pixel coordinate.
+     * @param[rightBound] The right bound's pixel coordinate.
+     * @param[line] Line to wrap.
+     * @param[g] The graphics object this TextObject is on.
+     * @return Returns a MutableList of lines that were formed from this
+     * cascade wrap. Each line is stored as a single element.
+     */
+    private fun cascadeWrap(
+            leftBound: Int,
+            rightBound: Int,
+            line: String,
+            g: Graphics2D
+    ): MutableList<String> {
+
+        // LL stands for "Line List"
+        val ll: MutableList<String> = mutableListOf<String>(line)
+        // Index of the current line we're on.
+        var i: Int = 0
+        while (i < ll.size) {
+            var rightEdge: Int = this.getRightEdgeOfLine(g, ll[i])
+            var leftEdge: Int = this.getLeftEdgeOfLine(g, ll[i])
+            var tooLong: Boolean = (
+                    rightEdge > rightBound
+                            || leftEdge < leftBound
+                    )
+            while (tooLong && Utils.hasBlank(ll[i])) {
+                val split: MutableList<String> =
+                        this.splitLastSpace(ll[i])
+                ll[i] = split[0]
+
+                // Check if there's a line below this one.
+                if (ll.size > i+1) {
+                    ll[i+1] = split[1] + " " + ll[i+1]
+                } else {
+                    ll.add(split[1])
+                }
+
+                // Recaculate the edges and length to see if this line is
+                // still too long.
+                rightEdge = this.getRightEdgeOfLine(g, ll[i])
+                leftEdge = this.getLeftEdgeOfLine(g, ll[i])
+                tooLong = (
+                        rightEdge > rightBound
+                        || leftEdge < leftBound
+                )
+            }
+            i++
+        }
+        return ll
     }
 
     /**
@@ -299,5 +319,21 @@ class Text : GraphicsObject {
     private fun getLeftEdgeOfLine(g: Graphics2D, line: String): Int {
         return this.getUnanchoredPosition(g).x.toInt() +
                 this.getAlignmentShift(g, line)
+    }
+
+    /**
+     * Replace the last space in the string with a newline.
+     * @param[s] String to insert into.
+     * @return New string with a newline if there's a space.
+     */
+    private fun splitLastSpace(s: String): MutableList<String> {
+        for (i in s.length-1 downTo 0) {
+            if (s[i] == ' ') {
+                val front = s.substring(0,i)
+                val rear = s.substring(i+1,s.length)
+                return mutableListOf<String>(front, rear)
+            }
+        }
+        return mutableListOf<String>(s)
     }
 }
