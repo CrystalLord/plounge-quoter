@@ -34,7 +34,7 @@ class QuoteInfo {
     /** The alignment (justification) of the text object. */
     var alignment: Alignment = Alignment.CENTER
     /** The position (described by positionType), of the text object. */
-    var position: Vector2 = Vector2(0.5f,0.5f)
+    var position: Vector2 = Vector2(0.5f,0.15f)
     /** The type of position. */
     var positionType: QuotePosType = QuotePosType.IMAGE
     /** The fill colour of the text. */
@@ -49,8 +49,6 @@ class QuoteInfo {
     var contentFontStyle: Int = Font.PLAIN
     /** The size of the font, in pixels. */
     var contentFontSize: Int = 80
-    /** The character width of the text, in character counts. */
-    var contentWidth: Int = 30
     /** The position of the Author text. */
     var authorPos: AuthorPos = AuthorPos.BOT_RIGHT
     /** The size of the author annotation. */
@@ -61,6 +59,14 @@ class QuoteInfo {
     var content: String = ""
     /** The author of the quote, including any leading marks. */
     var author: String = ""
+    /** The left pixel bound of the content for text wrapping. */
+    var contentLeftBound: Float? = null
+    /** The right pixel bound of the content for text wrapping. */
+    var contentRightBound: Float? = null
+    /** The Margin for the author's X position. */
+    var authorXMargin: Int = 10
+    /** The Margin for the author's Y position. */
+    var authorYMargin: Int = 10
 
     fun getContentTextObj(imgWidth: Int, imgHeight: Int): Text {
         val contentText: Text = Text()
@@ -74,12 +80,21 @@ class QuoteInfo {
                 this.contentFontSize
         )
 
+        // Compute the correct position of the text.
         when (positionType) {
             QuotePosType.ABS -> contentText.globalPosition = position
             QuotePosType.IMAGE -> {
                 contentText.globalPosition =
                         Vector2(position.x*imgWidth, position.y * imgHeight)
             }
+        }
+
+        // Add wrapping if set. Note, this MUST come last.
+        if (this.contentLeftBound != null && this.contentRightBound != null) {
+            contentText.leftPixelBound = (this.contentLeftBound!! * imgWidth).
+                    toInt()
+            contentText.rightPixelBound = (this.contentRightBound!! * imgWidth).
+                    toInt()
         }
 
         return contentText
@@ -93,6 +108,7 @@ class QuoteInfo {
      */
     fun getAuthorTextObj(imgWidth: Int, imgHeight: Int): Text {
         val authorText: Text = Text()
+        val marginShift: Vector2
         authorText.setContent(this.author)
         authorText.color = this.fillColor
         authorText.font = Font(
@@ -103,16 +119,18 @@ class QuoteInfo {
 
         when (this.authorPos) {
             AuthorPos.BOT_RIGHT -> {
+                marginShift = Vector2(-this.authorXMargin, -this.authorYMargin)
                 authorText.alignment = Alignment.RIGHT
                 authorText.anchor = Anchor.BOT_RIGHT
                 authorText.globalPosition =
-                        Vector2(imgWidth,imgHeight)
+                        Vector2(imgWidth,imgHeight) + marginShift
             }
             AuthorPos.BOT_LEFT -> {
+                marginShift = Vector2(this.authorXMargin, -this.authorYMargin)
                 authorText.alignment = Alignment.LEFT
                 authorText.anchor = Anchor.BOT_LEFT
                 authorText.globalPosition =
-                        Vector2(0,imgHeight)
+                        Vector2(0,imgHeight) + marginShift
             }
             else -> println("something's wrong help")
         }

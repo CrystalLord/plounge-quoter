@@ -1,9 +1,6 @@
 package org.crystal.ploungequoter
 
-import java.awt.image.BufferedImage
-import java.awt.image.WritableRaster
 import java.awt.Color
-import java.awt.Rectangle
 import org.crystal.struct.Queue
 import org.crystal.struct.IntMatrix
 
@@ -32,7 +29,7 @@ class Outliner() {
     /**
      * Outline a layer to another write layer.
      *
-     * @param[layerToOutline] Render layer to get opaque from.
+     * @param[readLayer] Render layer to get opaque from.
      * @param[writeLayer] Raster layer to write the outline on.
      * @post writeLayer is rewritten to outline
      */
@@ -41,8 +38,8 @@ class Outliner() {
         val width: Int = readRaster.getBounds().width
         val height: Int = readRaster.getBounds().height
 
-        var allocatedSamples: IntArray = intArrayOf(0,0,0,0)
-        var queue: Queue<SelectionSample> = Queue<SelectionSample>()
+        val allocatedSamples: IntArray = intArrayOf(0,0,0,0)
+        val queue: Queue<SelectionSample> = Queue<SelectionSample>()
 
         // Grab opaque colours and put them in a queue.
         println("Finding...")
@@ -65,7 +62,7 @@ class Outliner() {
 
         // Growing the selection.
         println("Growing...")
-        var selectionMask: IntMatrix = IntMatrix(
+        val selectionMask: IntMatrix = IntMatrix(
                 writeLayer.getImage().getWidth(),
                 writeLayer.getImage().getHeight()
         )
@@ -77,7 +74,7 @@ class Outliner() {
                         ?: throw RuntimeException()
                 )
 
-                var growthQueue = this.getCircleSelection(
+                val growthQueue = this.getCircleSelection(
                         selected.pos,
                         this.growthRadius
                 )
@@ -101,9 +98,9 @@ class Outliner() {
                                 s.pos.x,
                                 s.pos.y,
                                 Math.max(
-                                        currentMaskVal.toInt(),
+                                        currentMaskVal,
                                         s.a
-                                ).toInt()
+                                )
                         )
                     }
                 }
@@ -128,7 +125,7 @@ class Outliner() {
             radius: Double
     ) : Queue<SelectionSample> {
 
-        var selectQueue: Queue<SelectionSample> = Queue<SelectionSample>()
+        val selectQueue: Queue<SelectionSample> = Queue<SelectionSample>()
 
         val minX: Int = center.x - Math.floor(radius).toInt()
         val maxX: Int = center.x + Math.ceil(radius).toInt()
@@ -221,7 +218,7 @@ class Outliner() {
                             Math.min(
                                     wCol.getAlpha() + aAlpha,
                                     255
-                            ).toInt()
+                            )
                     )
             )
             // Make sure to increment to the next column.

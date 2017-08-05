@@ -6,6 +6,7 @@ import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
+import javax.imageio.IIOException
 
 /**
  * The Renderer stores all visual objects, then when finally processing, it
@@ -13,7 +14,7 @@ import java.awt.image.BufferedImage
  *
  * To use this class, add layers to the renderer, then call render.
  *
- * @param[backgroundPath] Path that details where the background image is.
+ * @param[backgroundFile] File that details where the background image is.
  */
 class Renderer(val backgroundFile: File) {
 
@@ -31,7 +32,7 @@ class Renderer(val backgroundFile: File) {
         try {
             this.img = ImageIO.read(this.backgroundFile)
             println("Renderer Loaded Background")
-        } catch (e: IllegalStateException) {
+        } catch (e: IIOException) {
             throw IllegalStateException("Background file could not be read.")
         }
     }
@@ -46,7 +47,7 @@ class Renderer(val backgroundFile: File) {
         // Note, the background is the base layer for the rendering system.
         // Sensibly, this would be changed for a more general
         // implementation.
-        var overarchingGraphics: Graphics2D = img.createGraphics()
+        val overarchingGraphics: Graphics2D = img.createGraphics()
 
         // Render all the objects in the queue.
         for (layer in this.layers) {
@@ -90,7 +91,7 @@ class Renderer(val backgroundFile: File) {
      * @return The newly added RasterLayer
      */
     fun addRasterLayer(): RasterLayer {
-        var newLayer: RasterLayer = RasterLayer(
+        val newLayer: RasterLayer = RasterLayer(
                 this.img.getWidth(),
                 this.img.getHeight()
         )
@@ -103,7 +104,7 @@ class Renderer(val backgroundFile: File) {
      * @return The newly added layer.
      */
     fun addGraphicsLayer(): GraphicsLayer {
-        var newLayer: GraphicsLayer = GraphicsLayer(
+        val newLayer: GraphicsLayer = GraphicsLayer(
                 this.img.getWidth(),
                 this.img.getHeight()
         )

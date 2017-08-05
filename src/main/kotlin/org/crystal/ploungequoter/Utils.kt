@@ -46,5 +46,30 @@ class Utils {
 
             return s.substring(startingSliceIndex, endingSliceIndex)
         }
+
+        /**
+         * Returns whether the given string has a blank in it or not.
+         * @param[s] String to check.
+         * @return Returns whether or not it has a blank in it.
+         */
+        fun hasBlank(s: String): Boolean {
+            return s.contains(" ")
+        }
+
+        /**
+         * Replace the last space in the string with a newline.
+         * @param[s] String to insert into.
+         * @return New string with a newline if there's a space.
+         */
+        fun insertEndNewline(s: String): String {
+            for (i in s.length-1 downTo 0) {
+                if (s[i] == ' ') {
+                    val front = s.substring(0,i)
+                    val rear = s.substring(i+1,s.length)
+                    return front + "\n" + rear
+                }
+            }
+            return s
+        }
     }
 }

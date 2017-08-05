@@ -2,7 +2,6 @@ package org.crystal.ploungequoter
 
 import java.awt.Graphics2D
 import java.awt.Color
-import java.awt.Image
 import java.awt.Font
 import java.awt.FontMetrics
 
@@ -31,7 +30,7 @@ class Text : GraphicsObject {
      * The content in this text object to render.
      * Each line of the content is stored as an element in this list.
      */
-    var contentList: List<String>
+    var contentList: MutableList<String>
     /** The foreground colour of the text. Default is black. */
     var color: Color
     /** The font used to render the text. Default is Plain SansSerif, 12pt. */
@@ -40,6 +39,16 @@ class Text : GraphicsObject {
     var lineSpacing: Int
     /** Alignment for the text, i.e. the justification. */
     var alignment: Alignment
+    /**
+     * The position of the left pixel bound for wrapping. If set to null,
+     * will not wrap.
+     */
+    var leftPixelBound: Int? = null
+    /**
+     * The position of the right pixel bound for wrapping. If set to null,
+     * will not wrap.
+     */
+    var rightPixelBound: Int? = null
 
     /** The default constructor */
     constructor() : this(Vector2.ZERO, "", Text.DEFAULT_FONT)
@@ -48,7 +57,7 @@ class Text : GraphicsObject {
 
     constructor(position: Vector2, content: String, font: Font?) {
         this.globalPosition = position
-        this.contentList = content.split("\n")
+        this.contentList = content.split("\n") as MutableList<String>
         this.color = Color(0,0,0)
         this.font = font
         this.anchor = Text.DEFAULT_ANCHOR
@@ -63,9 +72,8 @@ class Text : GraphicsObject {
      * @param content String representing the text to actually display.
      */
     fun setContent(content: String) {
-        this.contentList = content.split("\n")
+        this.contentList = content.split("\n") as MutableList<String>
     }
-
 
     /**
      * Retrieve the width of the longest line in this text object.
@@ -103,6 +111,16 @@ class Text : GraphicsObject {
      * @param g Graphics2D object to pass in to render on.
      */
     override fun render(g: Graphics2D) {
+
+        // Force content wrapping if needed.
+        if (this.leftPixelBound != null && this.rightPixelBound != null) {
+            this.wrapToBound(
+                    this.leftPixelBound!!,
+                    this.rightPixelBound!!,
+                    g
+            )
+        }
+
         // Store the graphics properties
         val stoColor: Color = g.getColor()
         val stoFont: Font = g.getFont()
@@ -114,7 +132,7 @@ class Text : GraphicsObject {
         g.setFont(this.font ?: Text.DEFAULT_FONT)
 
         // Retrieve the position we want for this object.
-        val anchorPos: Vector2 = this.getAnchoredPosition(g)
+        val anchorPos: Vector2 = this.getUnanchoredPosition(g)
         val metrics: FontMetrics = g.getFontMetrics(this.font)
 
         for (i: Int in this.contentList.indices) {
@@ -141,7 +159,7 @@ class Text : GraphicsObject {
 
 
     /**
-     * Retrieve the length of one line of text.
+     * Retrieve the length of one line of text in pixels.
      */
     private fun getLineWidth(g: Graphics2D, line: String): Int {
         val metrics: FontMetrics = g.getFontMetrics(this.font)
@@ -162,7 +180,7 @@ class Text : GraphicsObject {
      */
     private fun getAlignmentShift(g: Graphics2D, line: String): Int {
         val lineWidth: Int = this.getLineWidth(g, line)
-        var shift: Int
+        val shift: Int
         when (this.alignment) {
             Alignment.RIGHT -> shift = -lineWidth + this.getWidth(g)
             Alignment.CENTER -> shift = -lineWidth/2 + this.getWidth(g)/2
@@ -171,15 +189,14 @@ class Text : GraphicsObject {
         return shift
     }
 
-
     /**
      * Retrieve the true position to render at, instead of the skewed anchored
      * position.
      *
      * @param g Graphics object to evaluate the size of this Text.
      */
-    private fun getAnchoredPosition(g: Graphics2D): Vector2 {
-        var shift: Vector2
+    private fun getUnanchoredPosition(g: Graphics2D): Vector2 {
+        val shift: Vector2
 
         when (this.anchor) {
             Anchor.TOP_LEFT -> shift = Vector2(0f,this.getHeight(g).toFloat())
@@ -212,5 +229,75 @@ class Text : GraphicsObject {
             }
         }
         return this.globalPosition + shift
+    }
+
+    /**
+     * Force a wrapping on this text object to wrap within given pixel bounds.
+     * @param[leftBound] The left bound's pixel coordinate.
+     * @param[rightBound] The right bound's pixel coordinate.
+     * @param[g] The graphics object this TextObject is on.
+     */
+    private fun wrapToBound(leftBound: Int, rightBound: Int, g: Graphics2D) {
+        // This is quite an ugly function.
+        // It will keep running until it no longer needs to check whether
+        // the content needs to be updated. So what does that mean?
+        // If there was a line that was too long (pixel wise), then it will
+        // effectively edit that line, and insert a newline.
+        // It will then reset this Text object's content, then check again if
+        // the all the lines are the correct length.
+
+        var newContent: String = ""
+        // Has the content changed in the last loop iteration? If so, we'll
+        // need to check whether it's within the wrapping bounds.
+        var needCheck: Boolean = true
+        while (needCheck) {
+            needCheck = false
+            for (i in this.contentList.indices) {
+                var line: String = this.contentList[i]
+                val rightEdge: Int = this.getRightEdgeOfLine(g, line)
+                val leftEdge: Int = this.getLeftEdgeOfLine(g, line)
+                val tooLong: Boolean = (rightEdge > rightBound
+                        || leftEdge < leftBound
+                        )
+
+                // If the line is too long, and also has a blank in it, insert
+                // a newline at the last space available.
+                if (tooLong && Utils.hasBlank(this.contentList[i])) {
+                    needCheck = true
+                    line = Utils.insertEndNewline(line)
+                }
+
+                if (i != this.contentList.size - 1) {
+                    if (needCheck) {
+                        newContent += line + " "
+                    } else {
+                        newContent += line + "\n"
+                    }
+                } else {
+                    newContent += line
+                }
+            }
+
+            this.setContent(newContent)
+            // Make sure to reset the new content.
+            newContent = ""
+        }
+    }
+
+    /**
+     * Retrieve the pixel coordinate of the right edge of a given line.
+     */
+    private fun getRightEdgeOfLine(g: Graphics2D, line: String): Int {
+        val lineWidth: Int = this.getLineWidth(g, line)
+        return this.getUnanchoredPosition(g).x.toInt() + lineWidth +
+                this.getAlignmentShift(g, line)
+    }
+
+    /**
+     * Retrieve the pixel coordinate of the left edge of a given line.
+     */
+    private fun getLeftEdgeOfLine(g: Graphics2D, line: String): Int {
+        return this.getUnanchoredPosition(g).x.toInt() +
+                this.getAlignmentShift(g, line)
     }
 }

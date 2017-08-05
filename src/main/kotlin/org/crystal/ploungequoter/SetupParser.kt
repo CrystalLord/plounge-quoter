@@ -16,7 +16,7 @@ class SetupParser {
             var bgFile: File? = null
             // Make a new QuoteInfo list to represent all the quotes.
             val quoteInfos: ArrayList<QuoteInfo> = arrayListOf()
-            // Grab all the lines in the file.
+            // Grab all the lines in the files
             val lines: List<String> = file.readLines()
             // The index of the current quote we are parsing.
             var quoteInd: Int = -1
@@ -84,9 +84,9 @@ class SetupParser {
                     } else {
                         // If the global variable doesn't exist...
                         throw RuntimeException(
-                                "Global value "
+                                "Global parameter \""
                                 +parameterName
-                                +" not found."
+                                +"\" not found."
                         )
                     }
                 }
@@ -116,7 +116,8 @@ class SetupParser {
          *
          * @param[quoteInfo] QuoteInfo object to modify.
          * @param[param] Parameter name.
-         * @param[value] Value of the parameter.
+         * @param[value] Value of the parameter. Note, it cannot have any
+         * leading or trailing spaces.
          * @post The input [quoteInfo] is modified with the new param's value.
          */
         private fun interpretParameter(
@@ -151,6 +152,17 @@ class SetupParser {
                 "content" -> quoteInfo.content = value.replace("\\n","\n")
                 "author" -> quoteInfo.author = value.replace("\\n","\n")
                 "authorfontsize" -> quoteInfo.authorFontSize = value.toInt()
+                "contentwrap" -> {
+                    val xy: List<String> = value.split(",")
+                    if (xy.size != 2) {
+                        throw RuntimeException("contentwrap not in correct " +
+                                "format.")
+                    }
+                    quoteInfo.contentLeftBound = Utils.stripBlank(xy[0])
+                            .toFloat()
+                    quoteInfo.contentRightBound = Utils.stripBlank(xy[1])
+                            .toFloat()
+                }
                 else -> throw RuntimeException(
                         "Unknown Parameter given: "
                         +param
