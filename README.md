@@ -14,7 +14,7 @@ The program is still in Alpha, but you can currently make an image with the
 executable Jar file. Try running:
 
 ```bash
-$ java -jar target/ploungequoter.jar -b path/to/background/image
+$ java -jar target/ploungequoter.jar -q path/to/quotefile
 ```
 
 ## Building

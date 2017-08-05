@@ -1,6 +1,5 @@
 package org.crystal.ploungequoter
 
-import java.awt.Image
 import java.awt.Graphics2D
 
 /**
