@@ -8,7 +8,15 @@ that text on an image. It should also have the ability to submit the quote
 directly to the official [Plounge Quotes tumblr](http://ploungequotes.tumblr.com) in such a way that formats the
 post to the standard.
 
-## Usage
+
+Documentation for use is broken up into two parts:
+
+* [Running the generator](doc/running.md)
+* [Quote file Reference](doc/quote_params.md)
+
+This readme instead provides details on
+
+## Running Plounge Quoter
 
 The program is still in Alpha, but you can currently make an image with the
 executable Jar file. Try running:

@@ -1,6 +1,6 @@
 # Quote Parameters
 
-ploungequoter has quite a lot of settings for customisation. The following
+Ploungequoter has quite a lot of settings for customisation. The following
 parameters are supported currently.
 
 Note, parameter values remove all leading and trailing white space.
@@ -43,7 +43,30 @@ The author text of the quote. Supports newline syntax with `\n`
 ```
 author: ~NAME
 ```
-**Defuault:** Empty.
+**Defualt:** Empty.
+
+## authorfontsize
+
+The font size of the author text, in points.
+
+**Syntax:**
+```
+authorfontsize: NUM
+```
+**Default:** `60`
+
+## authorfontstyle
+
+The style of the font, e.g. plain, italic, bold.
+
+**Available Values:**
+```
+authorfontstyle: plain
+authorfontstyle: italic
+authorfontstyle: bold
+authorfontstyle: italicbold
+```
+**Default:** `italic`
 
 ## content
 
@@ -83,7 +106,7 @@ position: X,Y
 
 ## positiontype
 
-**Not supported in this commit. **
+**Not supported in this commit.**
 
 ## typeface
 
