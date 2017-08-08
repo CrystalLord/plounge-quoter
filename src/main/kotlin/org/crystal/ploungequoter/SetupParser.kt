@@ -83,30 +83,35 @@ class SetupParser {
 
                 // Catch cases where a quote line hasn't been set.
                 if (quoteInd < 0) {
-                    if (parameterName == "background") {
-                        // Allow both local file reading and URL parsing.
+                    when (parameterName) {
+                        "background" -> {
+                            // Allow both local file reading and URL parsing.
 
-                        // Retrieve the background regardless if it's a URL
-                        // or a local file.
-                        val backgroundRetriever: BackgroundRetriever =
-                                BackgroundRetriever(value)
-                        // Set the retrieved file.
-                        bgFile = backgroundRetriever.file
-                        i++ // Remember to increment i
-                        continue
-                    } else {
-                        // If the global variable doesn't exist...
-                        throw RuntimeException(
-                                "Global parameter \""
-                                +parameterName
-                                +"\" not found."
-                        )
+                            // Retrieve the background regardless if it's a URL
+                            // or a local file.
+                            val backgroundRetriever: BackgroundRetriever =
+                                    BackgroundRetriever(value)
+                            // Set the retrieved file.
+                            bgFile = backgroundRetriever.file
+                            i++ // Remember to increment i
+                        }
+                        "source" -> {
+                            println("Hey, thanks for using source, but it's " +
+                                    "not supported right now.")
+                            i++
+                        }
+                        else -> {
+                            // If the global variable doesn't exist...
+                            throw RuntimeException("Global parameter \"" +
+                                    parameterName + "\" not found.")
+                        }
                     }
+                    continue
                 }
 
                 // Send the parameter and value off to the interpreter.
                 // This will modify the QuoteInfo object we need.
-                SetupParser.interpretParameter(
+                SetupParser.interpretQuoteParameter(
                         quoteInfos[quoteInd],
                         parameterName,
                         value
@@ -133,7 +138,7 @@ class SetupParser {
          * leading or trailing spaces.
          * @post The input [quoteInfo] is modified with the new param's value.
          */
-        private fun interpretParameter(
+        private fun interpretQuoteParameter(
                 quoteInfo: QuoteInfo,
                 param: String,
                 value: String
