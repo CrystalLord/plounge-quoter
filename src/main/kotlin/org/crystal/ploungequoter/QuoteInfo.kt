@@ -63,9 +63,9 @@ class QuoteInfo {
     var contentLeftBound: Float? = null
     /** The right pixel bound of the content for text wrapping. */
     var contentRightBound: Float? = null
-    /** The Margin for the author's X position. */
+    /** The Margin for the author's X position, in pixels. */
     var authorXMargin: Int = 10
-    /** The Margin for the author's Y position. */
+    /** The Margin for the author's Y position, in pixels. */
     var authorYMargin: Int = 10
 
     fun getContentTextObj(imgWidth: Int, imgHeight: Int): Text {
@@ -132,7 +132,17 @@ class QuoteInfo {
                 authorText.globalPosition =
                         Vector2(0,imgHeight) + marginShift
             }
-            else -> println("something's wrong help")
+            AuthorPos.BOT_RIGHT_ATTACHED -> {
+                // So this is a bit complicated, because we need to figure
+                // out where the bottom right corner of the quote is.
+                val content: Text = this.getContentTextObj(imgWidth, imgHeight)
+                println("Still waiting for this to be implemented.")
+            }
+            AuthorPos.BOT_LEFT_ATTACHED -> {
+                // See my comment in BOT_RIGHT_ATTACHED case.
+                val content: Text = this.getContentTextObj(imgWidth, imgHeight)
+                println("Still waiting for this to be implemented.")
+            }
         }
         return authorText
     }

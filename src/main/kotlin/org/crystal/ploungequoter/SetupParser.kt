@@ -1,6 +1,8 @@
 package org.crystal.ploungequoter
 
+import java.awt.Color
 import java.io.File
+import java.awt.Font
 
 class SetupParser {
     companion object {
@@ -28,6 +30,13 @@ class SetupParser {
             var i: Int = 0
             while (i < lines.size) {
                 val stripedLine = Utils.stripBlank(lines[i])
+
+                // First, check the empty line case. If the line is empty,
+                // skip it.
+                if (stripedLine == "") {
+                    i++
+                    continue
+                }
 
                 // If a line says "quote", then the following parameters
                 // belong to that quote.
@@ -151,11 +160,51 @@ class SetupParser {
                         else -> throw RuntimeException("Invalid Alignment")
                     }
                 }
-                "typeface" -> quoteInfo.typefaceName = value
-                "contentfontsize" -> quoteInfo.contentFontSize = value.toInt()
-                "content" -> quoteInfo.content = value.replace("\\n","\n")
                 "author" -> quoteInfo.author = value.replace("\\n","\n")
                 "authorfontsize" -> quoteInfo.authorFontSize = value.toInt()
+                "authorfontstyle" -> {
+                    when (value) {
+                        "plain" -> quoteInfo.authorFontStyle = Font.PLAIN
+                        "italic" -> quoteInfo.authorFontStyle = Font.ITALIC
+                        "bold" -> quoteInfo.authorFontStyle = Font.BOLD
+                        "italicbold" -> quoteInfo.authorFontStyle =
+                                Font.ITALIC + Font.BOLD
+                    }
+                }
+                "authormargin" -> {
+                    val xy: List<String> = value.split(",")
+                    try {
+                        quoteInfo.authorXMargin =
+                                Utils.stripBlank(xy[0]).toInt()
+                        quoteInfo.authorYMargin =
+                                Utils.stripBlank(xy[1]).toInt()
+                    } catch (e: RuntimeException) {
+                        throw RuntimeException("authormargin parameter not in" +
+                                " correct format.")
+                    }
+                }
+                "authorposition" -> {
+                    when (value) {
+                        "botleft" -> quoteInfo.authorPos = AuthorPos.BOT_LEFT
+                        "botright" -> quoteInfo.authorPos = AuthorPos.BOT_RIGHT
+                        "botleftattached" -> quoteInfo.authorPos = AuthorPos
+                                .BOT_LEFT_ATTACHED
+                        "botrightattached" -> quoteInfo.authorPos = AuthorPos
+                                .BOT_RIGHT_ATTACHED
+                    }
+                }
+                "typeface" -> quoteInfo.typefaceName = value
+                "content" -> quoteInfo.content = value.replace("\\n","\n")
+                "contentfontsize" -> quoteInfo.contentFontSize = value.toInt()
+                "contentfontstyle" -> {
+                    when (value) {
+                        "plain" -> quoteInfo.contentFontStyle = Font.PLAIN
+                        "italic" -> quoteInfo.contentFontStyle = Font.ITALIC
+                        "bold" -> quoteInfo.contentFontStyle = Font.BOLD
+                        "italicbold" -> quoteInfo.contentFontStyle =
+                                Font.ITALIC + Font.BOLD
+                    }
+                }
                 "contentwrap" -> {
                     val xy: List<String> = value.split(",")
                     if (xy.size != 2) {
@@ -166,6 +215,32 @@ class SetupParser {
                             .toFloat()
                     quoteInfo.contentRightBound = Utils.stripBlank(xy[1])
                             .toFloat()
+                }
+                "fillcolour" -> {
+                    val cl: List<Int> =
+                            value.split(",").map {
+                                s ->  Utils.stripBlank(s).toInt()
+                            }
+                    try {
+                        quoteInfo.fillColor =
+                                Color(cl[0], cl[1], cl[2], cl[3])
+                    } catch (e: IllegalArgumentException) {
+                        throw IllegalArgumentException(
+                                "Colour parameter not using valid values."
+                        )
+                    }
+                }
+                "outlinecolour" -> {
+                    val cl: List<Int> =
+                            value.split(",").map { s ->  s.toInt() }
+                    try {
+                        quoteInfo.outlineColor =
+                                Color(cl[0], cl[1], cl[2], cl[3])
+                    } catch (e: IllegalArgumentException) {
+                        throw IllegalArgumentException(
+                                "Colour parameter not using valid values."
+                        )
+                    }
                 }
                 "position" -> {
                     val xy: List<String> = value.split(",")
@@ -178,10 +253,19 @@ class SetupParser {
                             Utils.stripBlank(xy[1]).toFloat()
                     )
                 }
-                else -> throw RuntimeException(
-                        "Unknown Parameter given: "
-                        +param
-                )
+                "positiontype" -> {
+                    when (value) {
+                        "img" -> quoteInfo.positionType = QuotePosType.IMAGE
+                        "abs" -> quoteInfo.positionType = QuotePosType.ABS
+                        else -> throw RuntimeException("Invalid positiontype.")
+                    }
+                }
+                else -> {
+                    throw RuntimeException(
+                            "Unknown Parameter given: "
+                                    +param
+                    )
+                }
             }
         }
     }

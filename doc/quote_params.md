@@ -57,7 +57,8 @@ authorfontsize: NUM
 
 ## authorfontstyle
 
-The style of the font, e.g. plain, italic, bold.
+The style of the font, e.g. plain, italic, bold. Note that not all fonts 
+support all possible styles.
 
 **Available Values:**
 ```
@@ -90,13 +91,31 @@ contentfontsize: NUM
 ```
 **Default:** `80`
 
+## contentwrap
+
+Determines if there should be content smart wrapping, and where that wrapping 
+should occur. It takes in two values, the left boundary and the right 
+boundary relative coordinates.
+
+To set wrapping at the edges of the image, set `0.0,1.0`. If you want 
+wrapping with margins, set something like `0.1,0.9`, which will give a 10% 
+margin on either side of the image.
+
+If you do not wish for any smart wrapping, do not use this parameter.
+
+**Syntax:**
+```
+contentwrap: LEFT,RIGHT
+```
+**Default:** Turned off.
+
 ## position
 
 Determines the position of the quote anchor.
-Depending on [[postiontype]], can either
+Depending on [postiontype](#positiontype), can either
 be in pixels, or in relative image coordinates. Accepts floating point values.
 
-Note, `0.0,0.0` is the top left corner of the quote.
+Note, `0.0,0.0` is the top left corner of the image.
 
 **Syntax:**
 ```
@@ -106,12 +125,23 @@ position: X,Y
 
 ## positiontype
 
-**Not supported in this commit.**
+Determines whether the value from [position](#position) is in absolute pixel 
+coordinates or in relative image coordinates. In relative coordinates, 
+(`img`), `position: 0.5,0.5` would mean the centre of the image, while in 
+absolute (`abs`) coordinates, this would be rounded to the origin (`0,0`).
+
+**Available Values:**
+```
+positiontype: img
+positiontype: abs
+```
+**Default:** `img`
 
 ## typeface
 
 The typeface of the quote, both content and author. The font must be installed
-on your system, and must be called with the given name.
+on your system, and must be called with the given name. If the font could not
+ be found, the generator will default to `SansSerif`.
 
 To see all available fonts, run PloungeQuoter with only the `-f` flag.
 
