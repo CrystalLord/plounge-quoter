@@ -69,6 +69,37 @@ authorfontstyle: italicbold
 ```
 **Default:** `italic`
 
+## authormargin
+
+The size of the author margins. The margins are symmetrical, and in pixels. 
+You specify the left/right side margins, then the top/bottom margins 
+individually. The values must be integers.
+
+**Syntax:**
+```
+authormargin: LEFTRIGHT,TOPBOTTOM
+```
+**Default:** `10,10`
+
+## authorposition
+
+The position of the author text. Unlike the content as a whole, there are 
+more limited options for the author text position currently.
+
+Attached positions are where the author text is connected to the content text.
+Otherwise, the author text is placed in some global position. Author position
+ is determined using this value and by [authormargin](#authormargin).
+ 
+**Available Values:**
+```
+authorposition: botleft
+authorposition: botright
+authorposition: botleftattached <NOT SUPPORTED YET>
+authorposition: botrighttattached <NOT SUPPORTED YET>
+```
+**Default:** `botleft`
+
+
 ## content
 
 The actual content of the quote. Supports newline syntax with `\n`. You're
@@ -91,6 +122,19 @@ contentfontsize: NUM
 ```
 **Default:** `80`
 
+## contentfontstyle
+
+The font style (plain, italics, bold) of the entire content block.
+
+**Available Values:**
+```
+contentfontstyle: plain
+contentfontstyle: italic
+contentfontstyle: bold
+contentfontstyle: italicbold
+```
+**Default:** `plain`
+
 ## contentwrap
 
 Determines if there should be content smart wrapping, and where that wrapping 
@@ -108,6 +152,28 @@ If you do not wish for any smart wrapping, do not use this parameter.
 contentwrap: LEFT,RIGHT
 ```
 **Default:** Turned off.
+
+## fillcolour
+
+Set the fill colour of the text. Must be a list of 4 integers between 0 and 255.
+
+**Syntax:**
+```
+fillcolour: RED,GREEN,BLUE,ALPHA
+```
+**Default:**: `255,255,255,255`
+
+## outlinecolour
+
+Set the outline colour of the text. Must be a list of 4 integers between 0 and 
+255.
+
+**Syntax:**
+```
+outlinecolour: RED,GREEN,BLUE,ALPHA
+```
+**Default:**: `0,0,0,255`
+
 
 ## position
 
