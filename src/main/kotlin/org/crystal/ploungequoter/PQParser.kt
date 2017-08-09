@@ -36,11 +36,6 @@ class PQParser {
                     Option.builder("h")
                     .longOpt("help")
                     .build()
-            val background: Option =
-                    Option.builder("b")
-                    .longOpt("background")
-                    .hasArg()
-                    .build()
             val quoteFile: Option =
                     Option.builder("q")
                     .longOpt("quotefile")
@@ -54,7 +49,6 @@ class PQParser {
             // Add each option to the options object so that we can parse
             // them correctly.
             this.options.addOption(help)
-            this.options.addOption(background)
             this.options.addOption(quoteFile)
             this.options.addOption(showFonts)
 
@@ -79,11 +73,6 @@ class PQParser {
                 // If we forgot something, print help.
                 this.printHelp()
             }
-        }
-
-        /** Retrieve the background image path if set. Otherwise return null */
-        fun getBackground(): String? {
-            return this.cmd?.getOptionValue("background")
         }
 
         /** Retrieve the quote file path if set. Otherwise return null */
