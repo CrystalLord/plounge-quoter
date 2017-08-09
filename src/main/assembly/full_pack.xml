@@ -7,10 +7,10 @@
     <files>
         <file>
         <source>target/${project.artifactId}.jar</source>
-        <outputDirectory>/</outputDirectory>
+        <outputDirectory>.</outputDirectory>
         </file>
         <file>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>.</outputDirectory>
             <source>src/main/scripts/ploungequoter.sh</source>
             <fileMode>0744</fileMode>
             <lineEnding>keep</lineEnding>
