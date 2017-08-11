@@ -2,7 +2,8 @@ package org.crystal.ploungequoter
 
 import java.awt.Color
 import java.awt.Font
-import java.awt.Rectangle
+import java.awt.Graphics2D
+import java.security.InvalidParameterException
 
 enum class QuotePosType {
     /** Absolute (global) pixel positioning */
@@ -68,7 +69,21 @@ class QuoteInfo {
     /** The Margin for the author's Y position, in pixels. */
     var authorYMargin: Int = 10
 
-    fun getContentTextObj(imgWidth: Int, imgHeight: Int): Text {
+    /**
+     * Retrieve a Text object that represents the quote content of this
+     * QuoteInfo. Note however, that the Text object has a null Graphics object.
+     * It must be assigned prior to rendering.
+     *
+     * @param[imgWidth] The width of the full image, in pixels.
+     * @param[imgHeight] The height of the full image, in pixels.
+     * @param[g] Optional parameter to set the Graphics2D object of the text
+     * object at the start.
+     */
+    fun getContentTextObj(
+            imgWidth: Int,
+            imgHeight: Int,
+            g: Graphics2D? = null
+    ): Text {
         val contentText: Text = Text()
         contentText.alignment = alignment
         contentText.setContent(content)
@@ -79,6 +94,7 @@ class QuoteInfo {
                 this.contentFontStyle,
                 this.contentFontSize
         )
+        contentText.graphics2D = g
 
         // Compute the correct position of the text.
         when (positionType) {
@@ -106,7 +122,10 @@ class QuoteInfo {
      * purposes.
      * @param[imgHeight] The height of the image in pixels.
      */
-    fun getAuthorTextObj(imgWidth: Int, imgHeight: Int): Text {
+    fun getAuthorTextObj(imgWidth: Int,
+                         imgHeight: Int,
+                         g: Graphics2D? = null
+    ): Text {
         val authorText: Text = Text()
         val marginShift: Vector2
         authorText.setContent(this.author)
@@ -116,6 +135,7 @@ class QuoteInfo {
                 this.authorFontStyle,
                 this.authorFontSize
         )
+        authorText.graphics2D = g
 
         when (this.authorPos) {
             AuthorPos.BOT_RIGHT -> {
@@ -135,13 +155,38 @@ class QuoteInfo {
             AuthorPos.BOT_RIGHT_ATTACHED -> {
                 // So this is a bit complicated, because we need to figure
                 // out where the bottom right corner of the quote is.
-                val content: Text = this.getContentTextObj(imgWidth, imgHeight)
-                println("Still waiting for this to be implemented.")
+                val content: Text = this.getContentTextObj(
+                        imgWidth,
+                        imgHeight,
+                        g
+                )
+                content.wrapContent()
+                val cPos: Vector2 = content.getCornerPos(3)
+                println(cPos.x)
+                println(cPos.y)
+                marginShift = Vector2(this.authorXMargin, this.authorYMargin)
+                authorText.alignment = Alignment.RIGHT
+                authorText.anchor = Anchor.TOP_RIGHT
+                authorText.globalPosition =
+                        cPos
+
             }
             AuthorPos.BOT_LEFT_ATTACHED -> {
                 // See my comment in BOT_RIGHT_ATTACHED case.
-                val content: Text = this.getContentTextObj(imgWidth, imgHeight)
-                println("Still waiting for this to be implemented.")
+                val content: Text = this.getContentTextObj(
+                        imgWidth,
+                        imgHeight,
+                        g
+                )
+                content.wrapContent()
+                authorText.graphics2D = g
+
+                val cPos: Vector2 = content.getCornerPos(2)
+                marginShift = Vector2(this.authorXMargin, this.authorYMargin)
+                authorText.alignment = Alignment.LEFT
+                authorText.anchor = Anchor.TOP_LEFT
+                authorText.globalPosition =
+                        cPos
             }
         }
         return authorText

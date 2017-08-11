@@ -67,9 +67,19 @@ class Generator {
             val contentText: Text = quoteInfo.getContentTextObj(
                     rLayer.getImage().width, rLayer.getImage().height
             )
+            contentText.graphics2D = gLayer.getGraphics2D()
+            // Force wrapping of the contentText object.
+            contentText.wrapContent()
 
+            // Make sure to pass the graphics2D object of the gLayer to the
+            // author text creation method.
+            // This is because we need to know metrics about the contentText
+            // object internally, and we can't do that without the Graphics2D
+            // object to draw on.
             val authorText: Text = quoteInfo.getAuthorTextObj(
-                    rLayer.getImage().width, rLayer.getImage().height
+                    rLayer.getImage().width,
+                    rLayer.getImage().height,
+                    gLayer.getGraphics2D()
             )
 
             gLayer.addGraphicsObj(contentText)

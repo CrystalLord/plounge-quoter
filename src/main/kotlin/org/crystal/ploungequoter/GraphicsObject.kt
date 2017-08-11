@@ -19,6 +19,8 @@ abstract class GraphicsObject {
     var parentObj: GraphicsObject? = null
     // Anchor for the rendering
     var anchor: Anchor = Anchor.TOP_LEFT
+    /** The graphics object attached to this object. */
+    abstract var graphics2D: Graphics2D?
 
     /**
      * Get relative position compared to parent.
@@ -42,18 +44,16 @@ abstract class GraphicsObject {
 
     /**
      * Render the object onto some graphics object.
-     * @param g The graphics object to render on to.
      */
-    abstract fun render(g: Graphics2D)
+    abstract fun render()
 
     /**
      * Get the width of this GraphicsObject in pixels.
      *
-     * @param[g] Graphics2D object of the layer to evaluate the width as.
      * @return Returns the width of the render object as an integer,
      * in pixels.
      */
-    abstract fun getWidth(g: Graphics2D): Int
+    abstract fun getWidth(): Int
 
     /**
      * Get the height of this GraphicsObject in pixels.
@@ -62,5 +62,5 @@ abstract class GraphicsObject {
      * @return Returns the height of the render object as an integer,
      * in pixels.
      */
-    abstract fun getHeight(g: Graphics2D): Int
+    abstract fun getHeight(): Int
 }

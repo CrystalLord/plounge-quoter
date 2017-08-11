@@ -16,6 +16,24 @@ class GraphicsLayer(
         private var height: Int
 ) : RenderLayer {
 
+    private var img: BufferedImage = BufferedImage(
+            this.width,
+            this.height,
+            BufferedImage.TYPE_INT_ARGB
+    )
+    private var g: Graphics2D
+
+    init {
+        // Get the graphics object at the start.
+        this.g = img.createGraphics()
+        // Turn on antialising for text.
+        val hints: RenderingHints = RenderingHints(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+        )
+        g.setRenderingHints(hints)
+    }
+
     // ------------------------------------------------------------------------
     // Properties
     // ------------------------------------------------------------------------
@@ -29,29 +47,12 @@ class GraphicsLayer(
     // Methods
     // ------------------------------------------------------------------------
 
-
     override fun getImage(): BufferedImage {
         // Create a transparent image object to draw on.
-        val img: BufferedImage = BufferedImage(
-                this.width,
-                this.height,
-                BufferedImage.TYPE_INT_ARGB
-        )
-
-        // Retrieve the graphics object for the transparent image.
-        val g: Graphics2D = img.graphics as Graphics2D
-
-        // Turn on antialising for text.
-        val hints: RenderingHints = RenderingHints(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-        )
-        g.setRenderingHints(hints)
-
         // Render all the objects in the stack.
         for (gObj in this.graphicsObjs) {
             // Pass the image to each of the render objects in the stack
-            gObj.render(g)
+            gObj.render()
         }
         return img
     }
@@ -60,12 +61,16 @@ class GraphicsLayer(
         return this.getImage().getRaster()
     }
 
+    /** Retrieve the internal Graphics2D object of this GraphicsLayer */
+    fun getGraphics2D(): Graphics2D = this.g
+
     /**
      * Add a GraphicsObject to this layer for drawing.
      * @param[obj] Graphics object to add.
      * @post The layer will now be drawn with this GraphicsObject.
      */
     fun addGraphicsObj(obj: GraphicsObject) {
+        obj.graphics2D = this.g
         this.graphicsObjs.add(obj)
     }
 }
