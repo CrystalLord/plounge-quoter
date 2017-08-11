@@ -58,6 +58,15 @@ class Vector2 {
         return Vector2(x*other, y*other)
     }
 
+    /** Convert this Vector2 object to a Vector2Int object */
+    fun toVector2Int(): Vector2Int {
+        return Vector2Int(this.x.toInt(), this.y.toInt())
+    }
+
+    override fun toString(): String {
+        return "Vector2("+this.x.toString()+","+this.y.toString()+")"
+    }
+
 }
 
 // Allow floats to be multiplied with vectors.
