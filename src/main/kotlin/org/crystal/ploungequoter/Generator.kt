@@ -2,6 +2,10 @@ package org.crystal.ploungequoter
 
 import java.io.File
 
+// Global constants
+val PNGTYPE: String = "png"
+val JPGTYPE: String = "jpg"
+
 /**
  * Pure companion object to generate a plounge quote image.
  * This is the high level object that stores the renderer, and writes files.
@@ -20,13 +24,16 @@ class Generator {
                 backgroundFile: File?,
                 quoteInfos: List<QuoteInfo>
         ) {
-            val PNGTYPE: String = "png"
-            //val JPGTYPE: String = "jpg"
-            val OUTPUT_PATH: String = "output_new.png"
+            // The file type of the output.
+            val outputType: String = JPGTYPE
 
-
-            // Load all the system fonts for any text generation.
-            //FontMap.loadFonts()
+            val currentTime: Long = System.currentTimeMillis()
+            val prime: Long = 6691L
+            val uglyHash: Long = currentTime % prime
+            val output_path: String = (
+                    "output"+uglyHash.toString()+"" +
+                    "."+outputType
+            )
 
             if (backgroundFile == null) {
                 val message: String = "Background File was null." +
@@ -38,14 +45,15 @@ class Generator {
             val renderer: Renderer = Renderer(backgroundFile)
 
             // Iterate though the quote data and generate all the text.
-            for (quoteInfo: QuoteInfo in quoteInfos) {
-                addOutlinedQuoteLayers(renderer, quoteInfo)
+            for (i: Int in quoteInfos.indices) {
+                println("Rendering quote: "+(i+1).toString())
+                addOutlinedQuoteLayers(renderer, quoteInfos[i])
             }
 
             println("Rendering...")
-            renderer.render(PNGTYPE, File(OUTPUT_PATH))
+            renderer.render(JPGTYPE, File(output_path))
             print("Output at: ")
-            println(OUTPUT_PATH)
+            println(output_path)
         }
 
         /**

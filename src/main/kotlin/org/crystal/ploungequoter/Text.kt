@@ -118,7 +118,7 @@ class Text : GraphicsObject {
         val metrics: FontMetrics = this.graphics2D?.getFontMetrics(this.font)
             ?: throw IllegalStateException("graphics2D object not set.")
         val lineCount: Int = this.contentList.size
-        return metrics.getHeight() * lineCount
+        return metrics.height * lineCount
     }
 
 
@@ -127,18 +127,18 @@ class Text : GraphicsObject {
      */
     override fun render() {
         // Just rename the graphics2D variable to g for less verbose usage.
-        val g: Graphics2D = this?.graphics2D
+        val g: Graphics2D = this.graphics2D
                 ?: throw IllegalStateException("graphics object not set.")
 
         // Store the graphics properties
-        val stoColor: Color = g.getColor()
-        val stoFont: Font = g.getFont()
+        val stoColor: Color = g.color
+        val stoFont: Font = g.font
 
         // Set graphics properties
-        g.setColor(this.color)
+        g.color = this.color
         // Retrieve the font we want to use
         // If the font doesn't exist, use the default.
-        g.setFont(this.font ?: Text.DEFAULT_FONT)
+        g.font = this.font ?: Text.DEFAULT_FONT
 
         // Retrieve the position we want for this object.
         val anchorPos: Vector2 = this.getUnanchoredPosition()
@@ -151,7 +151,7 @@ class Text : GraphicsObject {
             // account the font size.
             val pixelSpacing: Int = Utils.ptsToPixels(this.lineSpacing)
             // Create shifts for the text
-            val vertShift: Int = i * (metrics.getHeight() + pixelSpacing)
+            val vertShift: Int = i * (metrics.height + pixelSpacing)
             val horzShift: Int = getAlignmentShift(this.contentList[i])
 
             // Actually draw the string
@@ -206,9 +206,6 @@ class Text : GraphicsObject {
                 )
             }
         }
-        println("content:"+this.contentList[0])
-        println("\tShift:"+shift.toString())
-        println("\tglobalpos:"+globalPosition.toString())
         return this.globalPosition + shift
     }
 
@@ -220,7 +217,6 @@ class Text : GraphicsObject {
      */
     fun getCornerPos(index: Int): Vector2 {
         val pos: Vector2 = this.getUnanchoredPosition()
-        println("Unanchored Position" + pos.toString())
         val cornerPos: Vector2
 
         when (index) {

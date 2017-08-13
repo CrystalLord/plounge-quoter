@@ -3,7 +3,6 @@ package org.crystal.ploungequoter
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics2D
-import java.security.InvalidParameterException
 
 enum class QuotePosType {
     /** Absolute (global) pixel positioning */
@@ -155,16 +154,18 @@ class QuoteInfo {
             AuthorPos.BOT_RIGHT_ATTACHED -> {
                 // So this is a bit complicated, because we need to figure
                 // out where the bottom right corner of the quote is.
+                // This requires that the content have a Graphics Object to
+                // evaluate where things are for metrics.
+                // This is why we pass g in, and we wrap the content.
                 val content: Text = this.getContentTextObj(
                         imgWidth,
                         imgHeight,
                         g
                 )
+                // Make sure, for certain, that the content is wrapped before
+                // we get the lower right corner.
                 content.wrapContent()
                 val cPos: Vector2 = content.getCornerPos(3)
-                println(cPos.x)
-                println(cPos.y)
-                marginShift = Vector2(this.authorXMargin, this.authorYMargin)
                 authorText.alignment = Alignment.RIGHT
                 authorText.anchor = Anchor.TOP_RIGHT
                 authorText.globalPosition =
@@ -182,7 +183,6 @@ class QuoteInfo {
                 authorText.graphics2D = g
 
                 val cPos: Vector2 = content.getCornerPos(2)
-                marginShift = Vector2(this.authorXMargin, this.authorYMargin)
                 authorText.alignment = Alignment.LEFT
                 authorText.anchor = Anchor.TOP_LEFT
                 authorText.globalPosition =

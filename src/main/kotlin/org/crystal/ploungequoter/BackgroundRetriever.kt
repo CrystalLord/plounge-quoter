@@ -20,8 +20,10 @@ class BackgroundRetriever(input: String) {
         if (input.subSequence(0,httpPrefix.length) == httpPrefix
                 || input.subSequence(0,httpsPrefix.length) == httpsPrefix) {
             this.downloaded = true
+            File(System.getProperty("java.io.tmpdir")).mkdir()
             val downloadDirectory: Path = Paths.get(
-                    System.getProperty("user.dir"))
+                System.getProperty("java.io.tmpdir")
+            )
             download(URL(input), downloadDirectory)
         } else {
             this.downloaded = false
@@ -38,10 +40,12 @@ class BackgroundRetriever(input: String) {
         this.path = directory.resolve(basename)
         this.file = File(directory.resolve(basename).toString())
 
-        if (this.file.exists() && !this.file.isDirectory()) {
-            println("Download file already cached: " + basename)
+        if (this.file.exists() && !this.file.isDirectory) {
+            println("Download file already cached in: " + directory)
             return
         }
+
+        println("Downloading background... this may take a bit.")
 
         // Retrieval stream for online content
         val bis: BufferedInputStream = BufferedInputStream(url.openStream())
@@ -55,7 +59,7 @@ class BackgroundRetriever(input: String) {
         }
         fis.close()
         bis.close()
-        println("Downloaded: " + basename)
+        println("Downloaded to: " + directory)
     }
 
     fun deleteFile() {
