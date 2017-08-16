@@ -121,9 +121,10 @@ class QuoteInfo {
      * purposes.
      * @param[imgHeight] The height of the image in pixels.
      */
-    fun getAuthorTextObj(imgWidth: Int,
-                         imgHeight: Int,
-                         g: Graphics2D? = null
+    fun getAuthorTextObj(
+            imgWidth: Int,
+            imgHeight: Int,
+            g: Graphics2D? = null
     ): Text {
         val authorText: Text = Text()
         val marginShift: Vector2
@@ -138,6 +139,8 @@ class QuoteInfo {
 
         when (this.authorPos) {
             AuthorPos.BOT_RIGHT -> {
+                // Get how much we want to shift the bit of text based on the
+                // margin.
                 marginShift = Vector2(-this.authorXMargin, -this.authorYMargin)
                 authorText.alignment = Alignment.RIGHT
                 authorText.anchor = Anchor.BOT_RIGHT
@@ -145,6 +148,8 @@ class QuoteInfo {
                         Vector2(imgWidth,imgHeight) + marginShift
             }
             AuthorPos.BOT_LEFT -> {
+                // Get how much we want to shift the bit of text based on the
+                // margin.
                 marginShift = Vector2(this.authorXMargin, -this.authorYMargin)
                 authorText.alignment = Alignment.LEFT
                 authorText.anchor = Anchor.BOT_LEFT
