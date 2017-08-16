@@ -16,6 +16,11 @@ class SetupParser {
         fun readQuoteFile(file: File): SetupOutput {
             // Background quote file
             var bgFile: File? = null
+            // The type of file output. (png, jpg)
+            var outputType: String = PNGTYPE
+            // The source for the quote.
+            var source: String = ""
+
             // Make a new QuoteInfo list to represent all the quotes.
             val quoteInfos: ArrayList<QuoteInfo> = arrayListOf()
             // Grab all the lines in the files
@@ -96,8 +101,11 @@ class SetupParser {
                             i++ // Remember to increment i
                         }
                         "source" -> {
-                            println("Hey, thanks for using source, but it's " +
-                                    "not supported right now.")
+                            source = value
+                            i++
+                        }
+                        "outputtype" -> {
+                            outputType = value
                             i++
                         }
                         else -> {
@@ -122,7 +130,7 @@ class SetupParser {
             }
             // Return the combined output in SetupOutput object.
             if (bgFile != null) {
-                return SetupOutput(bgFile, quoteInfos)
+                return SetupOutput(bgFile, quoteInfos, outputType, source)
             } else {
                 throw RuntimeException("Background File Not Set.")
             }

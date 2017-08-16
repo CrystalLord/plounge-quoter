@@ -44,4 +44,15 @@ Note, this is currently not supported in this commit.
 ```
 source: SOURCE
 ```
-**Default:** `No Source Given`
+**Default:** Empty String.
+
+## outputtype
+
+Selects the file output type.
+
+**Available Values:**
+```
+outputtype: png
+outputtype: jpg
+```
+**Default:** `png`
