@@ -36,9 +36,11 @@ class BackgroundRetriever(input: String) {
      * Download a file from a URL to
      */
     fun download(url: URL, directory: Path) {
-        val basename: String = FilenameUtils.getName(url.path)
+        // Use a hash as a basename to prevent unrelated overlaps.
+        val basename: String = url.hashCode().toString()
         this.path = directory.resolve(basename)
-        this.file = File(directory.resolve(basename).toString())
+        val hashName: String = url.hashCode().toString()
+        this.file = File(directory.resolve(hashName).toString())
 
         if (this.file.exists() && !this.file.isDirectory) {
             println("Download file already cached in: " + directory)
