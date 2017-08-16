@@ -12,5 +12,7 @@ import java.io.File
  */
 data class SetupOutput (
         val backgroundFile: File,
-        val quoteInfos: List<QuoteInfo>
+        val quoteInfos: List<QuoteInfo>,
+        val outputType: String = PNGTYPE,
+        val source: String = ""
 )

@@ -22,11 +22,10 @@ class Generator {
          */
         fun generatePloungeQuote(
                 backgroundFile: File?,
-                quoteInfos: List<QuoteInfo>
+                quoteInfos: List<QuoteInfo>,
+                outputType: String,
+                source: String
         ) {
-            // The file type of the output.
-            val outputType: String = JPGTYPE
-
             val currentTime: Long = System.currentTimeMillis()
             val prime: Long = 6691L
             val uglyHash: Long = currentTime % prime
@@ -51,7 +50,7 @@ class Generator {
             }
 
             println("Rendering...")
-            renderer.render(JPGTYPE, File(output_path))
+            renderer.render(PNGTYPE, File(output_path))
             print("Output at: ")
             println(output_path)
         }

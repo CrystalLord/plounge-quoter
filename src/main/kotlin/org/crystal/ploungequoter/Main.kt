@@ -29,7 +29,9 @@ fun main(args: Array<String>) {
                     // Make the plounge quote.
                     Generator.generatePloungeQuote(
                             so.backgroundFile,
-                            so.quoteInfos
+                            so.quoteInfos,
+                            so.outputType,
+                            so.source
                     )
                 } catch (e: NullPointerException) {
                     throw InvalidStateException("Quote file was null.")
