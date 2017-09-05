@@ -1,5 +1,7 @@
 # plounge-quoter
 
+[![Build Status](https://travis-ci.org/CrystalLord/plounge-quoter.svg?branch=master)](https://travis-ci.org/CrystalLord/plounge-quoter)
+
 ![ploungequote.png](http://68.media.tumblr.com/fa7e3912bdec55643d9ae280d34928fd/tumblr_nhkszdkeR71t4798zo1_540.png)
 
 This is a little test project to hopefully improve my Kotlin abilities.
