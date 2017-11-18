@@ -1,6 +1,5 @@
 package org.crystal.ploungequoter
 
-import sun.plugin.dom.exception.InvalidStateException
 import java.io.File
 import java.awt.GraphicsEnvironment
 
@@ -34,7 +33,7 @@ fun main(args: Array<String>) {
                             so.source
                     )
                 } catch (e: NullPointerException) {
-                    throw InvalidStateException("Quote file was null.")
+                    throw IllegalStateException("Quote file was null.")
                 }
             }
         }
